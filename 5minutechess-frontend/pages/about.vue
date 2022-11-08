@@ -1,0 +1,3 @@
+<template>
+  <!-- <particles></particles> -->
+</template>

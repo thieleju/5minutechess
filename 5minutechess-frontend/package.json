@@ -13,6 +13,8 @@
   },
   "dependencies": {
     "sass": "^1.56.0",
+    "tsparticles": "^2.5.3",
+    "vue3-particles": "^2.5.3",
     "vuetify": "^3.0.0"
   }
 }

@@ -4,12 +4,22 @@ export default defineNuxtConfig({
     "vuetify/lib/styles/main.sass",
     "@mdi/font/css/materialdesignicons.min.css",
   ],
+  plugins: [
+    {
+      src: "@/plugins/particles.js",
+      mode: "client",
+      ssr: false,
+    },
+  ],
   build: {
-    transpile: ["vuetify"],
+    transpile: ["vuetify", "vue3-particles", "tsparticles"],
   },
   vite: {
     define: {
       "process.env.DEBUG": false,
     },
+  },
+  app: {
+    pageTransition: { name: "fade", mode: "out-in" },
   },
 });
