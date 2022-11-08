@@ -9,6 +9,10 @@ const apps = [
     route: "/",
   },
   {
+    name: "Chess",
+    route: "/chess",
+  },
+  {
     name: "About",
     route: "/about",
   },
