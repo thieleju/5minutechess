@@ -21,5 +21,14 @@ export default defineNuxtConfig({
   },
   app: {
     pageTransition: { name: "fade", mode: "out-in" },
+    head: {
+      charset: "utf-16",
+      viewport: "width=device-width, initial-scale=1",
+      title: "5 Minute Chess",
+      meta: [
+        // <meta name="description" content="My amazing site">
+        { name: "5 Minute Chess", content: "Play a move every 5 Minutes!" },
+      ],
+    },
   },
 });

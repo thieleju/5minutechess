@@ -6,7 +6,7 @@
   <main>
     <main-container
       icon="mdi-home"
-      text="Titel"
+      text="Home View"
       :size="{
         xs: 12,
         sm: 8,
@@ -15,7 +15,7 @@
         xl: 4,
       }"
     >
-      <p>hello</p>
+      <v-alert>Hello</v-alert>
     </main-container>
   </main>
 </template>
