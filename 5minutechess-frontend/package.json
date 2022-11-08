@@ -8,6 +8,11 @@
     "postinstall": "nuxt prepare"
   },
   "devDependencies": {
+    "@mdi/font": "^7.0.96",
     "nuxt": "3.0.0-rc.13"
+  },
+  "dependencies": {
+    "sass": "^1.56.0",
+    "vuetify": "^3.0.0"
   }
 }
