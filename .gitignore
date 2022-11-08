@@ -1,3 +1,12 @@
+*.log*
+.nuxt
+.nitro
+.cache
+.output
+.env
+dist
+
+
 # Logs
 logs
 *.log
