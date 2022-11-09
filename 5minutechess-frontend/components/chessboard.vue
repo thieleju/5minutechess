@@ -14,6 +14,7 @@
         <div class="row" v-for="row in 8" :key="row">
           <div class="column" v-for="column in 8" :key="column">
             <!-- alternate color of each square -->
+
             <div
               class="square"
               :class="{

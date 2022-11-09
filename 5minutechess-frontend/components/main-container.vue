@@ -45,7 +45,7 @@ const props = defineProps({
         :xl="props.size.xl"
         class="container"
       >
-        <div class="title">
+        <div class="titleContainer">
           <v-icon left>{{ props.icon }}</v-icon>
           <p class="titleText">{{ props.text }}</p>
           <v-spacer></v-spacer>
@@ -82,7 +82,7 @@ const props = defineProps({
   padding: 10px;
 }
 
-.title {
+.titleContainer {
   display: flex;
   background: #38a3a5;
   margin: 0;
