@@ -5,12 +5,12 @@ const active_tab = ref(1);
 
 const apps = [
   {
-    name: "Home",
+    name: "Chess",
     route: "/",
   },
   {
-    name: "Chess",
-    route: "/chess",
+    name: "Profile",
+    route: "/profile",
   },
   {
     name: "About",
