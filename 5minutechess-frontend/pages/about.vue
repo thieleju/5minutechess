@@ -1,5 +1,5 @@
 <template>
-  <main>
+  <v-main>
     <main-container
       icon="mdi-details"
       text="About"
@@ -13,5 +13,5 @@
     >
       <p class="ma-auto">Sorry, nothing here yet</p>
     </main-container>
-  </main>
+  </v-main>
 </template>
