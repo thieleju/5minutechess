@@ -11,7 +11,7 @@
         xl: 4,
       }"
     >
-      <p>hello</p>
+      <p class="ma-auto">Sorry, nothing here yet</p>
     </main-container>
   </main>
 </template>
