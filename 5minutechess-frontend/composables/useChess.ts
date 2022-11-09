@@ -1,6 +1,11 @@
 export default function () {
-  // convert fen string to 2d array of pieces
+  // return default fen board
+  const default_board = () => {
+    const fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR";
+    return fen_to_board(fen);
+  };
 
+  // convert fen string to 2d array of pieces
   const fen_to_board = (fen: any) => {
     const board: Array<Array<string>> = [];
     const rows = fen.split("/");
@@ -34,5 +39,5 @@ export default function () {
     return board;
   };
 
-  return { fen_to_board };
+  return { default_board, fen_to_board };
 }
