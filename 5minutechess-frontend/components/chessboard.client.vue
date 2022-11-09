@@ -1,4 +1,17 @@
-<script setup></script>
+<script setup>
+import { ref, computed, watch, onMounted, onUnmounted } from "vue";
+import useChess from "@/composables/useChess.ts";
+
+const fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR";
+
+const { fen_to_board } = useChess();
+
+const board = ref(fen_to_board(fen));
+
+function get_piece_img_path(piece) {
+  return new URL(`../assets/pieces/${piece}.png`, import.meta.url).href;
+}
+</script>
 
 <template>
   <v-row align="center">
@@ -11,17 +24,32 @@
       <!-- css chessboard with 8x8 grid -->
       <div class="chessboard">
         <!-- loop through each row and column -->
-        <div class="row" v-for="row in 8" :key="row">
-          <div class="column" v-for="column in 8" :key="column">
+        <div class="column" v-for="column in 8" :key="column">
+          <div class="row" v-for="row in 8" :key="row">
             <!-- alternate color of each square -->
-
             <div
               class="square"
               :class="{
                 'white-square': (row + column) % 2 === 0,
                 'black-square': (row + column) % 2 === 1,
               }"
-            ></div>
+            >
+              <!-- add piece to square -->
+              <div class="piece" v-if="board[row - 1][column - 1]">
+                <!-- 
+                    nuxt-img only applicable with ssr, this component is client only
+                  <nuxt-img
+                  preload
+                  format="webp"
+                  :width="piece_size"
+                  :height="piece_size"
+                  :src="board[row - 1][column - 1] + '.png'"
+                /> -->
+                <v-img
+                  :src="get_piece_img_path(board[row - 1][column - 1])"
+                ></v-img>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -50,8 +78,8 @@
 }
 
 .square {
-  min-width: 50px;
-  min-height: 50px;
+  //min-width: 50px;
+  //min-height: 50px;
   aspect-ratio: 1;
   object-fit: contain;
 }

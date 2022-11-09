@@ -11,10 +11,6 @@ export default defineNuxtConfig({
       ssr: false,
     },
   ],
-  modules: ["@nuxt/image-edge"],
-  image: {
-    dir: "static",
-  },
   build: {
     transpile: ["vuetify", "vue3-particles", "tsparticles"],
   },
