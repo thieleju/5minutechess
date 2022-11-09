@@ -1,12 +1,9 @@
 <script setup>
 import { ref, computed, watch, onMounted, onUnmounted } from "vue";
-import useChess from "@/composables/useChess.ts";
 
-const fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR";
+const { default_board, fen_to_board } = useChess();
 
-const { fen_to_board } = useChess();
-
-const board = ref(fen_to_board(fen));
+const board = ref(default_board());
 
 function get_piece_img_path(piece) {
   return new URL(`../assets/pieces/${piece}.png`, import.meta.url).href;
