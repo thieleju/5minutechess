@@ -43,10 +43,9 @@ const props = defineProps({
         :md="props.size.md"
         :lg="props.size.lg"
         :xl="props.size.xl"
-        class="containerRight"
+        class="container"
       >
-        <!-- containerRight title -->
-        <div class="titleRight">
+        <div class="title">
           <v-icon left>{{ props.icon }}</v-icon>
           <p class="titleText">{{ props.text }}</p>
           <v-spacer></v-spacer>
@@ -62,9 +61,9 @@ const props = defineProps({
 </template>
 
 <style lang="scss">
-.containerRight {
+.container {
   background-color: #2d2d2d;
-  margin-top: 20vh;
+  margin-top: 10vh;
   margin-left: auto;
   margin-right: auto;
   padding: 0px;
@@ -83,7 +82,7 @@ const props = defineProps({
   padding: 10px;
 }
 
-.titleRight {
+.title {
   display: flex;
   background: #38a3a5;
   margin: 0;
