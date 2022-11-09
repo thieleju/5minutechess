@@ -4,6 +4,8 @@
 
 <template>
   <v-main>
-    <chessboard></chessboard>
+    <client-only placeholder="Loading...">
+      <chessboard></chessboard>
+    </client-only>
   </v-main>
 </template>
