@@ -13,7 +13,7 @@ const openLink = (link) => {
 </script>
 
 <template>
-  <main>
+  <v-main>
     <main-container
       icon="mdi-account"
       text="Chess Profiles"
@@ -51,5 +51,5 @@ const openLink = (link) => {
         <v-card-title>User `{{ username }}` could not be found!</v-card-title>
       </v-card>
     </main-container>
-  </main>
+  </v-main>
 </template>

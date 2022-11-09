@@ -34,7 +34,7 @@ const props = defineProps({
 </script>
 
 <template>
-  <main>
+  <v-main>
     <v-row align="center" style="height: 100%">
       <v-col
         cols="12"
@@ -50,20 +50,20 @@ const props = defineProps({
           <p class="titleText">{{ props.text }}</p>
           <v-spacer></v-spacer>
         </div>
-        <div class="innerPadding">
-          <div class="headCont">
-            <slot />
-          </div>
+        <!-- <div class="innerPadding"> -->
+        <div class="headCont">
+          <slot />
         </div>
+        <!-- </div> -->
       </v-col>
     </v-row>
-  </main>
+  </v-main>
 </template>
 
 <style lang="scss">
 .container {
   background-color: #2d2d2d;
-  margin-top: 10vh;
+  //margin-top: 0;
   margin-left: auto;
   margin-right: auto;
   padding: 0px;
