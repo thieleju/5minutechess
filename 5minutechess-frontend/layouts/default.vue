@@ -30,6 +30,7 @@ const apps = [
           :key="i"
           :to="app.route"
           color="primary"
+          class="text-button"
         >
           {{ app.name }}
         </v-tab>
