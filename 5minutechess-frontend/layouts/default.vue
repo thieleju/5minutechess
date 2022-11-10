@@ -21,6 +21,7 @@ const apps = [
 
 <template>
   <v-app>
+    <NuxtLoadingIndicator />
     <v-app-bar class="px-3" flat density="compact">
       <v-spacer></v-spacer>
       <v-tabs centered v-model="active_tab" color="primary">

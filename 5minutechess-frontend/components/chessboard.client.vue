@@ -1,12 +1,33 @@
 <script setup>
 import { ref, computed, watch, onMounted, onUnmounted } from "vue";
+import Board from "~~/composables/Board";
 
-const { default_board, fen_to_board } = useChess();
+// const { default_board, fen_to_board } = useChess();
 
-const board = ref(default_board());
+// const board = ref(default_board());
 
-function get_piece_img_path(piece) {
-  return new URL(`../assets/pieces/${piece}.png`, import.meta.url).href;
+const board = ref(new Board());
+
+// function get_piece_img_path(piece) {
+//   return new URL(`../assets/pieces/${piece}.png`, import.meta.url).href;
+// }
+
+// function startDrag(e, item) {
+//   console.log("start drag", item);
+//   e.dataTransfer.dropEffect = "move";
+//   e.dataTransfer.effectAllowed = "move";
+//   e.dataTransfer.setData("itemID", item.id);
+// }
+
+// function onDrop(evt, list) {
+//   console.log("on drop", evt, list);
+//   // const itemID = evt.dataTransfer.getData("itemID");
+//   // const item = this.items.find((item) => item.id == itemID);
+//   // item.list = list;
+// }
+
+function get_piece_url(file) {
+  return new URL(file, import.meta.url).href;
 }
 </script>
 
@@ -21,30 +42,34 @@ function get_piece_img_path(piece) {
       <!-- css chessboard with 8x8 grid -->
       <div class="chessboard">
         <!-- loop through each row and column -->
-        <div class="column" v-for="column in 8" :key="column">
-          <div class="row" v-for="row in 8" :key="row">
+        <div class="row" v-for="(row, y) in board.fields" :key="row">
+          <div class="column" v-for="(col, x) in board.fields" :key="col">
+            <!-- SQUARE -->
             <!-- alternate color of each square -->
             <div
-              class="square"
+              class="square drop-zone align-self-center"
+              @drop="onDrop($event, 1)"
+              @dragover.prevent
+              @dragenter.prevent
               :class="{
-                'white-square': (row + column) % 2 === 0,
-                'black-square': (row + column) % 2 === 1,
+                'white-square': (x + y) % 2 === 0,
+                'black-square': (x + y) % 2 === 1,
               }"
             >
+              <div class="v-btn--absolute">
+                {{ board.fields[x][y].notation }}
+              </div>
+
               <!-- add piece to square -->
-              <div class="piece" v-if="board[row - 1][column - 1]">
-                <!-- 
-                    nuxt-img only applicable with ssr, this component is client only
-                  <nuxt-img
-                  preload
-                  format="webp"
-                  :width="piece_size"
-                  :height="piece_size"
-                  :src="board[row - 1][column - 1] + '.png'"
-                /> -->
+              <div class="piece" v-if="board.fields[x][y]">
+                <!-- PIECE -->
                 <v-img
-                  :src="get_piece_img_path(board[row - 1][column - 1])"
-                ></v-img>
+                  :src="get_piece_url(board.fields[x][y]?.piece?.image)"
+                  @dragstart="startDrag($event, { row, col })"
+                  draggable="true"
+                  link
+                >
+                </v-img>
               </div>
             </div>
           </div>
@@ -55,6 +80,12 @@ function get_piece_img_path(piece) {
 </template>
 
 <style lang="scss">
+.notation {
+  position: absolute;
+  color: #000;
+  font-size: 1rem;
+  font-weight: bold;
+}
 .white-square {
   background-color: #e6f4f1;
   //background-color: #e6f4f1;
