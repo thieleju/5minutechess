@@ -38,53 +38,48 @@ function onDrop(evt, field_to) {
 </script>
 
 <template>
-  <v-row align="center">
-    <v-col cols="12" class="container">
-      <div class="title">
-        <v-icon left>mdi-chess-queen</v-icon>
-        <p class="titleText">Chessboard</p>
-        <v-spacer></v-spacer>
-      </div>
-      <!-- css chessboard with 8x8 grid -->
-      <div class="chessboard">
-        <!-- loop through each row and column -->
-        <div class="row" v-for="(row, y) in board.fields" :key="row">
-          <div class="column" v-for="(col, x) in board.fields" :key="col">
-            <!-- SQUARE -->
-            <!-- alternate color of each square -->
-            <div
-              class="square drop-zone align-self-center"
-              @drop="onDrop($event, board.fields[x][y])"
-              @dragover.prevent
-              @dragenter.prevent
-              :class="{
-                'white-square': (x + y) % 2 === 0,
-                'black-square': (x + y) % 2 === 1,
-              }"
-            >
-              <!-- <div class="v-btn--absolute">
+  <div class="title">
+    <v-icon class="my-auto" left>mdi-chess-queen</v-icon>
+    <p class="titleText text-h6">5 Minute Chess - Game 1</p>
+  </div>
+  <!-- css chessboard with 8x8 grid -->
+  <div class="chessboard">
+    <!-- loop through each row and column -->
+    <div class="row" v-for="(row, y) in board.fields" :key="row">
+      <div class="column" v-for="(col, x) in board.fields" :key="col">
+        <!-- SQUARE -->
+        <!-- alternate color of each square -->
+        <div
+          class="square drop-zone align-self-center"
+          @drop="onDrop($event, board.fields[x][y])"
+          @dragover.prevent
+          @dragenter.prevent
+          :class="{
+            'white-square': (x + y) % 2 === 0,
+            'black-square': (x + y) % 2 === 1,
+          }"
+        >
+          <!-- <div class="v-btn--absolute">
                 {{ board.fields[x][y].notation }}
               </div> -->
 
-              <!-- add piece to square -->
-              <div class="piece" v-if="board.fields[x][y]">
-                <!-- PIECE -->
-                <v-img
-                  v-if="board.fields[x][y].piece"
-                  :src="get_piece_url(board.fields[x][y].piece.image)"
-                  @dragstart="startDrag($event, board.fields[x][y])"
-                  draggable="true"
-                  link
-                  class="grabbable"
-                >
-                </v-img>
-              </div>
-            </div>
+          <!-- add piece to square -->
+          <div class="piece" v-if="board.fields[x][y]">
+            <!-- PIECE -->
+            <v-img
+              v-if="board.fields[x][y].piece"
+              :src="get_piece_url(board.fields[x][y].piece.image)"
+              @dragstart="startDrag($event, board.fields[x][y])"
+              draggable="true"
+              link
+              class="grabbable"
+            >
+            </v-img>
           </div>
         </div>
       </div>
-    </v-col>
-  </v-row>
+    </div>
+  </div>
 </template>
 
 <style lang="scss">
@@ -132,19 +127,6 @@ function onDrop(evt, field_to) {
   //min-height: 50px;
   aspect-ratio: 1;
   object-fit: contain;
-}
-
-.container {
-  //max-height: 600px;
-  max-width: 80vh;
-  background-color: #2d2d2d;
-  //margin-top: 0;
-  margin-left: auto;
-  margin-right: auto;
-  padding: 0px;
-  border-radius: 10px;
-  //z-index: 5;
-  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 }
 
 .headCont {

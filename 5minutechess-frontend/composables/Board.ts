@@ -6,8 +6,8 @@ export default class Board {
   fields: Field[][] = this.initialize_board();
   fen_start: string = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR";
 
+  // create empty board with default fen
   constructor() {
-    // create empty board with default fen
     this.apply_fen_to_board(this.fen_start);
   }
 
@@ -55,7 +55,6 @@ export default class Board {
             isWhite,
             char.toLowerCase() as "p" | "r" | "n" | "b" | "q" | "k"
           );
-
           // next column
           col_index++;
         } else {
