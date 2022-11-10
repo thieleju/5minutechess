@@ -30,7 +30,7 @@ const apps = [
           :key="i"
           :to="app.route"
           color="primary"
-          class="text-button"
+          class="tabText"
         >
           {{ app.name }}
         </v-tab>
@@ -44,4 +44,8 @@ const apps = [
   </v-app>
 </template>
 
-<style lang="scss"></style>
+<style lang="scss">
+.tabText {
+  -webkit-font-smoothing: antialiased;
+}
+</style>
