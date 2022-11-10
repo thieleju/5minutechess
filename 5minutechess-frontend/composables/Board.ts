@@ -13,7 +13,7 @@ export default class Board {
 
   move(from: Field, to: Field) {
     // temporary print chess move notation
-    console.log(`move: ${from.piece?.type}${from.notation}${to.notation}`);
+    // console.log(`move: ${from.piece?.type}${from.notation}${to.notation}`);
 
     // replace piece on new field with piece on old field
     this.fields[to.x][to.y].piece = this.fields[from.x][from.y].piece;

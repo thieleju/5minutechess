@@ -33,7 +33,7 @@ function onDrop(evt, field_to) {
     return;
 
   board.value.move(field_from, field_to);
-  console.log(board.value.get_fen_from_board());
+  // console.log(board.value.get_fen_from_board());
 }
 </script>
 
