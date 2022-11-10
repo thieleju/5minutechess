@@ -1,33 +1,39 @@
 <script setup>
-import { ref, computed, watch, onMounted, onUnmounted } from "vue";
+import { ref, computed, watch, onMounted, getCurrentInstance } from "vue";
 import Board from "~~/composables/Board";
-
-// const { default_board, fen_to_board } = useChess();
-
-// const board = ref(default_board());
-
-const board = ref(new Board());
-
-// function get_piece_img_path(piece) {
-//   return new URL(`../assets/pieces/${piece}.png`, import.meta.url).href;
-// }
-
-// function startDrag(e, item) {
-//   console.log("start drag", item);
-//   e.dataTransfer.dropEffect = "move";
-//   e.dataTransfer.effectAllowed = "move";
-//   e.dataTransfer.setData("itemID", item.id);
-// }
-
-// function onDrop(evt, list) {
-//   console.log("on drop", evt, list);
-//   // const itemID = evt.dataTransfer.getData("itemID");
-//   // const item = this.items.find((item) => item.id == itemID);
-//   // item.list = list;
-// }
 
 function get_piece_url(file) {
   return new URL(file, import.meta.url).href;
+}
+const board = ref(new Board());
+
+function startDrag(e, item) {
+  e.dataTransfer.dropEffect = "move";
+  e.dataTransfer.effectAllowed = "move";
+  e.dataTransfer.setData("notation", item.notation);
+}
+
+// move piece on drop
+function onDrop(evt, field_to) {
+  const notation = evt.dataTransfer.getData("notation");
+
+  // temporary move validation
+
+  if (!notation) return;
+
+  let field_from = board.value.get_field_by_notation(notation);
+
+  if (field_from.notation == field_to.notation) return;
+
+  if (
+    field_from.piece &&
+    field_to.piece &&
+    field_from.piece.white === field_to.piece.white
+  )
+    return;
+
+  board.value.move(field_from, field_to);
+  console.log(board.value.get_fen_from_board());
 }
 </script>
 
@@ -48,7 +54,7 @@ function get_piece_url(file) {
             <!-- alternate color of each square -->
             <div
               class="square drop-zone align-self-center"
-              @drop="onDrop($event, 1)"
+              @drop="onDrop($event, board.fields[x][y])"
               @dragover.prevent
               @dragenter.prevent
               :class="{
@@ -56,18 +62,20 @@ function get_piece_url(file) {
                 'black-square': (x + y) % 2 === 1,
               }"
             >
-              <div class="v-btn--absolute">
+              <!-- <div class="v-btn--absolute">
                 {{ board.fields[x][y].notation }}
-              </div>
+              </div> -->
 
               <!-- add piece to square -->
               <div class="piece" v-if="board.fields[x][y]">
                 <!-- PIECE -->
                 <v-img
-                  :src="get_piece_url(board.fields[x][y]?.piece?.image)"
-                  @dragstart="startDrag($event, { row, col })"
+                  v-if="board.fields[x][y].piece"
+                  :src="get_piece_url(board.fields[x][y].piece.image)"
+                  @dragstart="startDrag($event, board.fields[x][y])"
                   draggable="true"
                   link
+                  class="grabbable"
                 >
                 </v-img>
               </div>
@@ -80,6 +88,20 @@ function get_piece_url(file) {
 </template>
 
 <style lang="scss">
+.grabbable {
+  cursor: move; /* fallback if grab cursor is unsupported */
+  cursor: grab;
+  cursor: -moz-grab;
+  cursor: -webkit-grab;
+}
+
+/* (Optional) Apply a "closed-hand" cursor during drag operation. */
+.grabbable:active {
+  cursor: grabbing;
+  cursor: -moz-grabbing;
+  cursor: -webkit-grabbing;
+}
+
 .notation {
   position: absolute;
   color: #000;
