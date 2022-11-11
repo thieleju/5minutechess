@@ -1,11 +1,8 @@
-export default defineEventHandler(async () => {
-  try {
-    // read data from storage
-    const game_current = await useStorage().getItem("db:game_current.json");
+import Game from "~~/server/utils/Game";
 
-    return game_current.moves;
-  } catch (error) {
-    console.error(error);
-    return { status: "error" };
-  }
+export default defineEventHandler(async () => {
+  const game = await Game.get_instance();
+
+  if (game) return game.moves;
+  else return new Error("Game not ready yet!");
 });
