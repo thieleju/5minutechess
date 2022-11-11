@@ -12,7 +12,7 @@ export default defineNuxtConfig({
     },
   ],
   build: {
-    transpile: ["vuetify", "vue3-particles", "tsparticles"],
+    transpile: ["vuetify"],
   },
   vite: {
     define: {

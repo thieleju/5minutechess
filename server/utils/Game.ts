@@ -1,8 +1,9 @@
 import Move from "./Move";
 import Vote from "./Vote";
 
-const GAME_TICK_RATE: number = 1000;
 var GAME_INVERVAL: NodeJS.Timer;
+const GAME_TICK_RATE: number = 1000;
+const GAME_DB_ITEM: string = "db:game_current.json";
 
 type VotedMove = {
   move: string;
@@ -10,8 +11,6 @@ type VotedMove = {
 };
 
 export default class Game {
-  db_item: string = "db:game_current.json";
-
   id_game: number = 0;
   timestamp_started: number = 0;
   whites_turn: boolean = true;
@@ -59,7 +58,7 @@ export default class Game {
       // reset timestamp
       this.timestamp_started = this.get_new_timestamp();
       // save to storage
-      await useStorage().setItem(this.db_item, this);
+      await useStorage().setItem(GAME_DB_ITEM, this);
       return;
     }
 
@@ -80,6 +79,11 @@ export default class Game {
     if (this.moves.length >= 40) {
       this.start_new_game();
     }
+
+    // reset timestamp
+    this.timestamp_started = this.get_new_timestamp();
+    // reset votes
+    this.votes = [];
   }
 
   find_most_voted_move(): VotedMove | undefined {
@@ -117,11 +121,13 @@ export default class Game {
     );
 
     // save to storage
-    await useStorage().setItem(this.db_item, this);
+    await useStorage().setItem(GAME_DB_ITEM, this);
   }
 
   async add_move(move: string, color: string, votes: Vote[]) {
     // TODO check if move is valid
+
+    console.log("New move:", move, color, votes);
 
     // add move to moves
     this.moves.push(
@@ -136,7 +142,7 @@ export default class Game {
     );
 
     // save to storage
-    await useStorage().setItem(this.db_item, this);
+    await useStorage().setItem(GAME_DB_ITEM, this);
   }
 
   async start_new_game() {
@@ -148,7 +154,7 @@ export default class Game {
     this.timestamp_started = this.get_new_timestamp();
 
     // save to storage
-    await useStorage().setItem(this.db_item, this);
+    await useStorage().setItem(GAME_DB_ITEM, this);
   }
 
   get_new_timestamp(): number {
@@ -165,7 +171,7 @@ export default class Game {
 
   async initialize_game() {
     // read data from storage
-    const game = await useStorage().getItem(this.db_item);
+    const game = await useStorage().getItem(GAME_DB_ITEM);
 
     this.id_game = game.id_game;
     this.timestamp_started = game.timestamp_started;

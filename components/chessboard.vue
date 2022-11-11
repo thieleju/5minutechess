@@ -1,11 +1,24 @@
 <script setup>
-import { ref, computed, watch, onMounted, getCurrentInstance } from "vue";
+import { ref, computed, watch, onMounted } from "vue";
 import Board from "~~/server/utils/Board";
+
+const board = ref(new Board());
+
+const { data: current_game } = await useLazyFetch("/api/game/current_game");
 
 function get_piece_url(file) {
   return new URL(file, import.meta.url).href;
 }
-const board = ref(new Board());
+
+async function vote_for_move(move) {
+  await $fetch("/api/game/vote_move", {
+    headers: {
+      "Content-Type": "application/json",
+    },
+    method: "POST",
+    body: { move },
+  });
+}
 
 function startDrag(e, item) {
   e.dataTransfer.dropEffect = "move";
@@ -14,7 +27,7 @@ function startDrag(e, item) {
 }
 
 // move piece on drop
-function onDrop(evt, field_to) {
+async function onDrop(evt, field_to) {
   const notation = evt.dataTransfer.getData("notation");
 
   // temporary move validation
@@ -33,7 +46,8 @@ function onDrop(evt, field_to) {
     return;
 
   board.value.move(field_from, field_to);
-  // console.log(board.value.get_fen_from_board());
+  await vote_for_move(`${field_from.notation}${field_to.notation}`);
+  await refreshNuxtData();
 }
 </script>
 
