@@ -58,6 +58,8 @@ export default class Game {
       console.log("No votes, resetting timer");
       // reset timestamp
       this.timestamp_started = this.get_new_timestamp();
+      // save to storage
+      await useStorage().setItem(this.db_item, this);
       return;
     }
 
