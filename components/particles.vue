@@ -1,3 +1,4 @@
+<!-- UNUSED COMPONENT -->
 <script setup>
 import { loadFull } from "tsparticles";
 
