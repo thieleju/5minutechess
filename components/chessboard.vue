@@ -1,13 +1,7 @@
 <script setup>
 import { ref, computed, watch, onMounted } from "vue";
 
-const { pending, data: board } = useLazyFetch("/api/game/board");
-
-watch(board, async (board_data_new) => {
-  console.log("new board data", board_data_new);
-
-  // board.value = board_data_new;
-});
+const { pending, data: board } = useFetch("/api/game/board");
 
 function get_piece_url(file) {
   return new URL(file, import.meta.url).href;

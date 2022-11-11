@@ -89,7 +89,6 @@ export default class Game {
     this.timestamp_started = this.get_new_timestamp();
     // reset votes
     this.votes = [];
-    console.log("cleared votes");
   }
 
   find_most_voted_move(): VotedMove | undefined {
