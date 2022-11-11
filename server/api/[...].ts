@@ -1,3 +1,3 @@
 export default defineEventHandler(() => {
-  console.log("fallBack route");
+  return { status: "error", message: "Route not found!" };
 });

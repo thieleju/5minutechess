@@ -3,9 +3,9 @@ import { ref, unref, computed, onMounted } from "vue";
 
 const active_tab = ref(0);
 const time = ref("0:00");
-const { data: timestamp_ref } = await useFetch("/api/timestamp");
-const { data: votes_ref } = await useFetch("/api/votes");
-const { data: moves_ref } = await useFetch("/api/moves");
+const { data: timestamp_ref } = await useFetch("/api/game/timestamp");
+const { data: votes_ref } = await useFetch("/api/game/votes");
+const { data: moves_ref } = await useFetch("/api/game/moves");
 
 onMounted(() => {
   // update every second
