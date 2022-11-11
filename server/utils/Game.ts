@@ -1,3 +1,4 @@
+import Board from "./Board";
 import Move from "./Move";
 import Vote from "./Vote";
 
@@ -17,6 +18,9 @@ export default class Game {
   moves: Move[] = [];
   votes: Vote[] = [];
 
+  fen_start: string = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR";
+  fen: string = "";
+
   static instance: Game;
 
   static async get_instance() {
@@ -27,7 +31,8 @@ export default class Game {
       await this.instance.initialize_game();
       // start game loop
       this.instance.start_game_loop();
-    } else return this.instance;
+    }
+    return this.instance;
   }
 
   constructor() {
@@ -58,7 +63,7 @@ export default class Game {
       // reset timestamp
       this.timestamp_started = this.get_new_timestamp();
       // save to storage
-      await useStorage().setItem(GAME_DB_ITEM, this);
+      this.save_game();
       return;
     }
 
@@ -84,6 +89,7 @@ export default class Game {
     this.timestamp_started = this.get_new_timestamp();
     // reset votes
     this.votes = [];
+    console.log("cleared votes");
   }
 
   find_most_voted_move(): VotedMove | undefined {
@@ -121,13 +127,14 @@ export default class Game {
     );
 
     // save to storage
-    await useStorage().setItem(GAME_DB_ITEM, this);
+    this.save_game();
   }
 
   async add_move(move: string, color: string, votes: Vote[]) {
     // TODO check if move is valid
-
-    console.log("New move:", move, color, votes);
+    const board = await Board.get_instance();
+    board.make_move(move, color);
+    this.fen = board.get_fen_from_board();
 
     // add move to moves
     this.moves.push(
@@ -142,7 +149,7 @@ export default class Game {
     );
 
     // save to storage
-    await useStorage().setItem(GAME_DB_ITEM, this);
+    this.save_game();
   }
 
   async start_new_game() {
@@ -153,8 +160,16 @@ export default class Game {
 
     this.timestamp_started = this.get_new_timestamp();
 
+    this.fen = this.fen_start;
+
+    // initailize board
+    const board = await Board.get_instance();
+    board.set_fen_and_turn(this.fen, this.whites_turn);
+
+    console.log("new game started, board set", this.id_game);
+
     // save to storage
-    await useStorage().setItem(GAME_DB_ITEM, this);
+    this.save_game();
   }
 
   get_new_timestamp(): number {
@@ -163,7 +178,8 @@ export default class Game {
     const date = new Date();
     const timestamp =
       date.getTime() +
-      (5 - (date.getUTCMinutes() % 5)) * 60 * 1000 -
+      // (5 - (date.getUTCMinutes() % 5)) * 60 * 1000 -
+      (2 - (date.getUTCMinutes() % 2)) * 60 * 1000 -
       date.getUTCSeconds() * 1000 -
       date.getUTCMilliseconds();
     return timestamp;
@@ -173,9 +189,22 @@ export default class Game {
     // read data from storage
     const game = await useStorage().getItem(GAME_DB_ITEM);
 
+    // check if game is currently going on
+    if (!game.fen) {
+      console.log("No game found");
+      // start new game
+      this.start_new_game();
+      return;
+    }
+
     this.id_game = game.id_game;
     this.timestamp_started = game.timestamp_started;
     this.whites_turn = game.whites_turn;
+    this.fen = game.fen;
+
+    // initailize board
+    const board = await Board.get_instance();
+    board.set_fen_and_turn(this.fen, this.whites_turn);
 
     // initialize moves
     this.moves = game.moves.map(
@@ -202,6 +231,17 @@ export default class Game {
         )
     );
 
-    console.log("Ongoing game initialized:", this);
+    console.log(
+      "Ongoing game initialized: ",
+      this.id_game,
+      " moves: ",
+      this.moves.length
+    );
+  }
+
+  async save_game() {
+    let temp = this;
+    // delete temp.board;
+    await useStorage().setItem(GAME_DB_ITEM, temp);
   }
 }

@@ -6,7 +6,7 @@ export default class Piece {
   constructor(white: boolean, type: "p" | "r" | "n" | "b" | "q" | "k") {
     this.white = white;
     this.type = type;
-    this.image = `../assets/pieces/${white ? "w" : "b"}_${this.type}.png`;
+    this.image = `/pieces/${white ? "w" : "b"}_${this.type}.png`;
   }
 
   toString() {

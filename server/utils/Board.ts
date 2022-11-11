@@ -1,19 +1,39 @@
 import Field from "./Field";
+import Game from "./Game";
 import Piece from "./Piece";
 
 export default class Board {
   // create empty board with fields
   fields: Field[][] = this.initialize_board();
-  fen_start: string = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR";
+  whites_turn: boolean = true;
 
-  // create empty board with default fen
-  constructor() {
-    this.apply_fen_to_board(this.fen_start);
+  static instance: Board;
+
+  // TODO For some reason the board instance is created twice
+  static async get_instance() {
+    // create new board instance or reply with existing one
+    if (!this.instance) {
+      // create instance with data from game
+      const game = await Game.get_instance();
+      this.instance = new Board(game.fen, game.whites_turn);
+    }
+    return this.instance;
   }
 
-  move(from: Field, to: Field) {
+  // create empty board with fen from game
+  constructor(fen: string, whites_turn: boolean) {
+    console.log("New boad instance created: " + fen);
+    this.whites_turn = whites_turn;
+    this.apply_fen_to_board(fen);
+  }
+
+  make_move(move: string, color: string) {
+    // get fields from move
+    const from = this.get_field_by_notation(move.slice(0, 2));
+    const to = this.get_field_by_notation(move.slice(2, 4));
+
     // temporary print chess move notation
-    // console.log(`move: ${from.piece?.type}${from.notation}${to.notation}`);
+    console.log(`move: ${from.piece?.type}${from.notation}${to.notation}`);
 
     // replace piece on new field with piece on old field
     this.fields[to.x][to.y].piece = this.fields[from.x][from.y].piece;
@@ -26,6 +46,11 @@ export default class Board {
     const y = notation.charCodeAt(0) - 97;
     const x = 8 - parseInt(notation[1]);
     return this.fields[x][y];
+  }
+
+  set_fen_and_turn(fen: string, whites_turn: boolean) {
+    this.apply_fen_to_board(fen);
+    this.whites_turn = whites_turn;
   }
 
   // get empty 2d chessboard array with notation

@@ -4,12 +4,19 @@ import { ref, unref, computed, onMounted } from "vue";
 // For some reason, this is only working with an invalid activ_tab value (:
 const active_tab = ref(12);
 const time = ref("0:00");
-const { data: current_game } = await useLazyFetch("/api/game/current_game");
+
+const { pending, data: current_game } = useLazyFetch("/api/game/current_game");
+
+watch(current_game, async (current_game_new) => {
+  console.log("new game data", current_game_new);
+
+  // current_game.value = current_game_new;
+});
 
 onMounted(() => {
   // update timer every second
   setInterval(async () => {
-    const timestamp = current_game.value.timestamp_started;
+    const timestamp = unref(current_game).timestamp_started;
 
     // get difference between current time and timestamp
     const difference = new Date(timestamp).getTime() - new Date().getTime();
@@ -29,12 +36,13 @@ onMounted(() => {
   }, 1000);
 
   // update interval every 3 seconds to update votes
-  setInterval(async () => {
-    await refreshNuxtData();
-  }, 3000);
+  // setInterval(async () => {
+  //   console.log("refresh");
+  //   await refreshNuxtData("current_game");
+  // }, 3000);
 });
 
-const votes_sorted = computed(async () => {
+const votes_sorted = computed(() => {
   // get votes array from ref
   const votes = unref(current_game).votes;
   if (!votes && votes.length == 0) return [];
