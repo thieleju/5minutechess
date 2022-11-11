@@ -25,14 +25,6 @@ export default class Move {
     this.votes = votes || [];
   }
 
-  add_vote(user: string, move: string) {
-    this.votes.push(
-      new Vote(this.id_game, this.id_move, this.timestamp, user, move)
-    );
-
-    // TODO save to storage
-  }
-
   toString(): string {
     return JSON.stringify(this);
   }
