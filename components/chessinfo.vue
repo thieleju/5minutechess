@@ -5,13 +5,7 @@ import { ref, unref, computed, onMounted } from "vue";
 const active_tab = ref(12);
 const time = ref("0:00");
 
-const { pending, data: current_game } = useLazyFetch("/api/game/current_game");
-
-watch(current_game, async (current_game_new) => {
-  console.log("new game data", current_game_new);
-
-  // current_game.value = current_game_new;
-});
+const { pending, data: current_game } = useFetch("/api/game/current_game");
 
 onMounted(() => {
   // update timer every second
