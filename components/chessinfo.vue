@@ -1,22 +1,27 @@
 <script setup>
 import { ref, unref, computed, onMounted } from "vue";
 
-const active_tab = ref(0);
+// For some reason, this is only working with an invalid activ_tab value (:
+const active_tab = ref(12);
 const time = ref("0:00");
-const { data: timestamp_ref } = await useFetch("/api/game/timestamp");
-const { data: votes_ref } = await useFetch("/api/game/votes");
-const { data: moves_ref } = await useFetch("/api/game/moves");
+const { data: timestamp_ref } = await useLazyFetch("/api/game/timestamp");
+const { data: votes_ref } = await useLazyFetch("/api/game/votes");
+const { data: moves_ref } = await useLazyFetch("/api/game/moves");
 
 onMounted(() => {
-  // update every second
-  setInterval(() => {
-    const obj = unref(timestamp_ref);
+  // update timer every second
+  setInterval(async () => {
+    const timestamp = unref(timestamp_ref);
 
     // get difference between current time and timestamp
-    const difference = new Date(obj.timestamp).getTime() - new Date().getTime();
+    const difference = new Date(timestamp).getTime() - new Date().getTime();
 
     // reload page when countdown is over
-    if (difference <= 0) window.location.reload();
+    if (difference <= 0) {
+      await refreshNuxtData();
+      // await navigateTo('/')
+      return;
+    }
 
     // calculate minutes and seconds from difference
     const minutes = Math.floor(difference / 1000 / 60);
@@ -76,9 +81,9 @@ function get_move_title(move) {
       </p>
     </div>
     <v-tabs
+      v-model="active_tab"
       centered
       fixed-tabs
-      v-model="active_tab"
       color="primary"
       class="mt-6"
     >
