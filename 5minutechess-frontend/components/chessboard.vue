@@ -1,6 +1,6 @@
 <script setup>
 import { ref, computed, watch, onMounted, getCurrentInstance } from "vue";
-import Board from "~~/composables/Board";
+import Board from "~~/server/utils/Board";
 
 function get_piece_url(file) {
   return new URL(file, import.meta.url).href;
