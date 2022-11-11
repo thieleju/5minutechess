@@ -1,10 +1,13 @@
 <script setup>
 import { ref, computed, watch, onMounted } from "vue";
-import Board from "~~/server/utils/Board";
 
-const board = ref(new Board());
+const { pending, data: board } = useLazyFetch("/api/game/board");
 
-const { data: current_game } = await useLazyFetch("/api/game/current_game");
+watch(board, async (board_data_new) => {
+  console.log("new board data", board_data_new);
+
+  // board.value = board_data_new;
+});
 
 function get_piece_url(file) {
   return new URL(file, import.meta.url).href;
@@ -30,23 +33,7 @@ function startDrag(e, item) {
 async function onDrop(evt, field_to) {
   const notation = evt.dataTransfer.getData("notation");
 
-  // temporary move validation
-
-  if (!notation) return;
-
-  let field_from = board.value.get_field_by_notation(notation);
-
-  if (field_from.notation == field_to.notation) return;
-
-  if (
-    field_from.piece &&
-    field_to.piece &&
-    field_from.piece.white === field_to.piece.white
-  )
-    return;
-
-  board.value.move(field_from, field_to);
-  await vote_for_move(`${field_from.notation}${field_to.notation}`);
+  await vote_for_move(`${notation}${field_to.notation}`);
   await refreshNuxtData();
 }
 </script>
@@ -56,16 +43,23 @@ async function onDrop(evt, field_to) {
     <v-icon class="my-auto" left>mdi-chess-queen</v-icon>
     <p class="titleText text-h6">5 Minute Chess - Game 1</p>
   </div>
+  <div class="ma-auto pa-auto" v-if="pending && !board?.fields">
+    <v-progress-circular
+      class="ma-auto pa-auto"
+      indeterminate
+      color="primary"
+    ></v-progress-circular>
+  </div>
   <!-- css chessboard with 8x8 grid -->
-  <div class="chessboard">
+  <div v-else class="chessboard">
     <!-- loop through each row and column -->
-    <div class="row" v-for="(row, y) in board.fields" :key="row">
-      <div class="column" v-for="(col, x) in board.fields" :key="col">
+    <div class="row" v-for="(row, y) in board?.fields" :key="row">
+      <div class="column" v-for="(col, x) in board?.fields" :key="col">
         <!-- SQUARE -->
         <!-- alternate color of each square -->
         <div
           class="square drop-zone align-self-center"
-          @drop="onDrop($event, board.fields[x][y])"
+          @drop="onDrop($event, board?.fields[x][y])"
           @dragover.prevent
           @dragenter.prevent
           :class="{
@@ -74,16 +68,16 @@ async function onDrop(evt, field_to) {
           }"
         >
           <!-- <div class="v-btn--absolute">
-                {{ board.fields[x][y].notation }}
+                {{ board?.fields[x][y].notation }}
               </div> -->
 
           <!-- add piece to square -->
-          <div class="piece" v-if="board.fields[x][y]">
+          <div class="piece" v-if="board?.fields[x][y]">
             <!-- PIECE -->
             <v-img
-              v-if="board.fields[x][y].piece"
-              :src="get_piece_url(board.fields[x][y].piece.image)"
-              @dragstart="startDrag($event, board.fields[x][y])"
+              v-if="board?.fields[x][y].piece"
+              :src="board?.fields[x][y].piece.image"
+              @dragstart="startDrag($event, board?.fields[x][y])"
               draggable="true"
               link
               class="grabbable"
