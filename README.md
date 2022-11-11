@@ -1,6 +1,6 @@
 # 5minutechess
 
-SSR with Nuxt 3 + Vue 3 + Vite + Vuetify 3
+![Preview Image](./preview.png)
 
 # Nuxt 3 Minimal Starter
 
