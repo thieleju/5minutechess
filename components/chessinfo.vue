@@ -4,22 +4,19 @@ import { ref, unref, computed, onMounted } from "vue";
 // For some reason, this is only working with an invalid activ_tab value (:
 const active_tab = ref(12);
 const time = ref("0:00");
-const { data: timestamp_ref } = await useLazyFetch("/api/game/timestamp");
-const { data: votes_ref } = await useLazyFetch("/api/game/votes");
-const { data: moves_ref } = await useLazyFetch("/api/game/moves");
+const { data: current_game } = await useLazyFetch("/api/game/current_game");
 
 onMounted(() => {
   // update timer every second
   setInterval(async () => {
-    const timestamp = unref(timestamp_ref);
+    const timestamp = current_game.value.timestamp_started;
 
     // get difference between current time and timestamp
     const difference = new Date(timestamp).getTime() - new Date().getTime();
 
     // reload page when countdown is over
     if (difference <= 0) {
-      await refreshNuxtData();
-      // await navigateTo('/')
+      await refreshNuxtData(); // await navigateTo('/')
       return;
     }
 
@@ -30,12 +27,17 @@ onMounted(() => {
     // set time as countdown to timestamp
     time.value = `${minutes}:${seconds < 10 ? "0" + seconds : seconds}`;
   }, 1000);
+
+  // update interval every 3 seconds to update votes
+  setInterval(async () => {
+    await refreshNuxtData();
+  }, 3000);
 });
 
-const votes_sorted = computed(() => {
+const votes_sorted = computed(async () => {
   // get votes array from ref
-  const votes = unref(votes_ref);
-  if (!votes) return [];
+  const votes = unref(current_game).votes;
+  if (!votes && votes.length == 0) return [];
 
   let counted = [];
   votes.forEach((vote) => {
@@ -61,9 +63,11 @@ function get_vote_title(move, count, users) {
 }
 
 function get_move_title(move) {
-  return `${move.id_move + 1}. ${move.move} | ${move.votes} vote${
-    move.votes > 1 ? "s" : ""
-  } | ${move.users.join(", ")}`;
+  const user_str = [];
+  move.votes.forEach((vote) => {
+    user_str.push(vote.user);
+  });
+  return `${move.id_move + 1}. ${move.move} | ${user_str.join(", ")}`;
 }
 </script>
 
@@ -121,9 +125,9 @@ function get_move_title(move) {
           <v-list class="overflow-y-auto" max-height="30vh">
             <!-- list with alternating colors -->
             <v-list-item
-              v-if="moves_ref.length > 0"
-              v-for="move in moves_ref"
-              :key="move.id"
+              v-if="current_game.moves.length > 0"
+              v-for="move in current_game.moves"
+              :key="move.id_move"
               :title="get_move_title(move)"
               class="overflow-y-auto"
               prepend-icon="mdi-chess-pawn"
