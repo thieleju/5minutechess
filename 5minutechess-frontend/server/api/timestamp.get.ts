@@ -12,5 +12,5 @@ export default defineEventHandler(() => {
     seconds * 1000 -
     date.getUTCMilliseconds();
 
-  return timestamp;
+  return { timestamp };
 });

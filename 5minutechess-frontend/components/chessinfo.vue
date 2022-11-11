@@ -1,116 +1,65 @@
 <script setup>
-import { ref, computed, watch, onMounted, getCurrentInstance } from "vue";
+import { ref, unref, computed, onMounted } from "vue";
 
 const active_tab = ref(0);
-const time_seconds = ref(300);
-const time = ref("5:00");
+const time = ref("0:00");
+const { data: timestamp_ref } = await useFetch("/api/timestamp");
+const { data: votes_ref } = await useFetch("/api/votes");
+const { data: moves_ref } = await useFetch("/api/moves");
 
 onMounted(() => {
+  // update every second
   setInterval(() => {
-    let minutes = Math.floor(time_seconds.value / 60);
-    let seconds = time_seconds.value % 60;
+    const obj = unref(timestamp_ref);
 
-    seconds = seconds < 10 ? "0" + seconds : seconds;
+    // get difference between current time and timestamp
+    const difference = new Date(obj.timestamp).getTime() - new Date().getTime();
 
-    time.value = minutes + ":" + seconds;
-    if (time_seconds.value > 0) {
-      time_seconds.value--;
-    } else {
-      time_seconds.value = 300;
-    }
+    // reload page when countdown is over
+    if (difference <= 0) window.location.reload();
+
+    // calculate minutes and seconds from difference
+    const minutes = Math.floor(difference / 1000 / 60);
+    const seconds = Math.floor((difference / 1000) % 60);
+
+    // set time as countdown to timestamp
+    time.value = `${minutes}:${seconds < 10 ? "0" + seconds : seconds}`;
   }, 1000);
 });
 
-const votes = ref([
-  {
-    user: "user1",
-    move: "e4",
-  },
-  {
-    user: "user2",
-    move: "d4",
-  },
-  {
-    user: "user3",
-    move: "e4",
-  },
-  {
-    user: "user4",
-    move: "c4",
-  },
-  {
-    user: "user5",
-    move: "a3",
-  },
-  {
-    user: "user6",
-    move: "b3",
-  },
-  {
-    user: "user7",
-    move: "e3",
-  },
-  {
-    user: "user8",
-    move: "d3",
-  },
-  {
-    user: "user8",
-    move: "e3",
-  },
-  {
-    user: "user8",
-    move: "f3",
-  },
-  {
-    user: "user8",
-    move: "g3",
-  },
-  {
-    user: "user8",
-    move: "d3",
-  },
-]);
+const votes_sorted = computed(() => {
+  // get votes array from ref
+  const votes = unref(votes_ref);
+  if (!votes) return [];
 
-const votes_count = computed(() => {
   let counted = [];
-  // count same moves in array
-  votes.value.forEach((vote) => {
+  votes.forEach((vote) => {
     let found = counted.find((c) => c.move == vote.move);
     if (found) {
       found.count++;
       found.users = [].concat(found.users, vote.user);
-      found.title = `${vote.move} | ${found.count} votes | ${found.users.join(
-        ", "
-      )}`;
+      found.title = get_vote_title(vote.move, found.count, found.users);
     } else
       counted.push({
         move: vote.move,
         count: 1,
         users: [vote.user],
-        title: `${vote.move} | 1 vote | ${vote.user}`,
+        title: get_vote_title(vote.move, 1, [vote.user]),
       });
   });
   // sort array by count
   return counted.sort((a, b) => b.count - a.count);
 });
 
-const moves = ref([
-  {
-    id: 0,
-    move: "e4",
-    color: "white",
-    votes: 3,
-    users: ["user1", "user2", "user3"],
-  },
-  {
-    id: 1,
-    move: "e4",
-    color: "black",
-    votes: 3,
-    users: ["user1"],
-  },
-]);
+function get_vote_title(move, count, users) {
+  return `${move} | ${count} vote${count > 1 ? "s" : ""} | ${users.join(", ")}`;
+}
+
+function get_move_title(move) {
+  return `${move.id_move + 1}. ${move.move} | ${move.votes} vote${
+    move.votes > 1 ? "s" : ""
+  } | ${move.users.join(", ")}`;
+}
 </script>
 
 <template>
@@ -145,8 +94,8 @@ const moves = ref([
           <v-list class="overflow-y-auto" max-height="30vh">
             <!-- list with alternating colors -->
             <v-list-item
-              v-if="votes_count.length > 0"
-              v-for="vote in votes_count"
+              v-if="votes_sorted.length > 0"
+              v-for="vote in votes_sorted"
               :key="vote.move"
               class="overflow-y-auto"
               :title="vote.title"
@@ -167,20 +116,11 @@ const moves = ref([
           <v-list class="overflow-y-auto" max-height="30vh">
             <!-- list with alternating colors -->
             <v-list-item
-              v-if="moves.length > 0"
-              v-for="move in moves"
+              v-if="moves_ref.length > 0"
+              v-for="move in moves_ref"
               :key="move.id"
+              :title="get_move_title(move)"
               class="overflow-y-auto"
-              :title="
-                move.id +
-                1 +
-                '. ' +
-                move.move +
-                ' | ' +
-                move.votes +
-                ' votes | ' +
-                move.users.join(', ')
-              "
               prepend-icon="mdi-chess-pawn"
             >
             </v-list-item>

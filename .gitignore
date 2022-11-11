@@ -5,6 +5,7 @@
 .output
 .env
 dist
+data
 
 
 # Logs
