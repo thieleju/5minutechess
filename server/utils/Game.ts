@@ -111,10 +111,6 @@ export default class Game {
   }
 
   async add_vote(user: string, move: string) {
-    // TODO check if user has already voted
-    if (this.votes.find((vote) => vote.user == user))
-      throw new Error("User has already voted");
-
     // add vote to votes
     this.votes.push(
       new Vote(
@@ -131,9 +127,10 @@ export default class Game {
   }
 
   async add_move(move: string, color: string, votes: Vote[]) {
-    // TODO check if move is valid
+    // make move on board
     const board = await Board.get_instance();
     board.make_move(move, color);
+
     this.fen = board.get_fen_from_board();
 
     // add move to moves

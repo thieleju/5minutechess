@@ -79,14 +79,20 @@ function get_move_title(move) {
   });
   return `${move.id_move + 1}. ${move.move} | ${user_str.join(", ")}`;
 }
+
+const time_started = computed(() => {
+  const ts = unref(current_game).timestamp_started;
+  const date = new Date(ts).toLocaleString();
+  return date;
+});
 </script>
 
 <template>
   <div class="title">
     <v-icon class="my-auto" left>mdi-chess-bishop</v-icon>
     <p class="titleText text-h6">
-      Game {{ current_game.id_game }} started
-      {{ new Date(current_game.timestamp_current).toLocaleString() }}
+      Game {{ current_game.id_game }}
+      <!-- started{{ time_started }} -->
     </p>
     <v-spacer></v-spacer>
   </div>
