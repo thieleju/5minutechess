@@ -14,6 +14,7 @@ type VotedMove = {
 export default class Game {
   id_game: number = 0;
   timestamp_started: number = 0;
+  timestamp_current: number = 0;
   whites_turn: boolean = true;
   moves: Move[] = [];
   votes: Vote[] = [];
@@ -55,13 +56,13 @@ export default class Game {
 
   async game_tick() {
     // check if time is up, no -> skip, yes -> new move
-    if (new Date().getTime() < this.timestamp_started) return;
+    if (new Date().getTime() < this.timestamp_current) return;
 
     // skip if no votes
     if (this.votes.length == 0) {
       console.log("No votes, resetting timer");
       // reset timestamp
-      this.timestamp_started = this.get_new_timestamp();
+      this.timestamp_current = this.get_new_timestamp();
       // save to storage
       this.save_game();
       return;
@@ -86,7 +87,7 @@ export default class Game {
     }
 
     // reset timestamp
-    this.timestamp_started = this.get_new_timestamp();
+    this.timestamp_current = this.get_new_timestamp();
     // reset votes
     this.votes = [];
   }
@@ -157,7 +158,8 @@ export default class Game {
     this.moves = [];
     this.votes = [];
 
-    this.timestamp_started = this.get_new_timestamp();
+    this.timestamp_started = new Date().getTime();
+    this.timestamp_current = this.get_new_timestamp();
 
     this.fen = this.fen_start;
 
@@ -189,7 +191,7 @@ export default class Game {
     const game = await useStorage().getItem(GAME_DB_ITEM);
 
     // check if game is currently going on
-    if (!game.fen) {
+    if (!game?.fen) {
       console.log("No game found");
       // start new game
       this.start_new_game();
@@ -198,6 +200,7 @@ export default class Game {
 
     this.id_game = game.id_game;
     this.timestamp_started = game.timestamp_started;
+    this.timestamp_current = game.timestamp_current;
     this.whites_turn = game.whites_turn;
     this.fen = game.fen;
 
