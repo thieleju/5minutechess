@@ -5,10 +5,6 @@ const { pending, data: board } = useLazyAsyncData("board", () =>
   $fetch("/api/game/board")
 );
 
-function get_piece_url(file) {
-  return new URL(file, import.meta.url).href;
-}
-
 async function vote_for_move(move) {
   await $fetch("/api/game/vote_move", {
     headers: {
@@ -39,15 +35,15 @@ async function onDrop(evt, field_to) {
     <v-icon class="my-auto" left>mdi-chess-queen</v-icon>
     <p class="titleText text-h6">5 Minute Chess - White to move</p>
   </div>
-  <div class="ma-auto pa-auto" v-if="pending && !board?.fields">
+  <!-- <div class="ma-auto pa-auto" v-if="pending">
     <v-progress-circular
       class="ma-auto pa-auto"
       indeterminate
       color="primary"
     ></v-progress-circular>
-  </div>
+  </div> -->
   <!-- css chessboard with 8x8 grid -->
-  <div v-else class="chessboard">
+  <div class="chessboard">
     <!-- loop through each row and column -->
     <div class="row" v-for="(row, y) in board?.fields" :key="row">
       <div class="column" v-for="(col, x) in board?.fields" :key="col">
@@ -63,9 +59,9 @@ async function onDrop(evt, field_to) {
             'black-square': (x + y) % 2 === 1,
           }"
         >
-          <!-- <div class="v-btn--absolute">
-                {{ board?.fields[x][y].notation }}
-              </div> -->
+          <div class="v-btn--absolute text-black">
+            {{ board?.fields[x][y].notation }} {{ x }} {{ y }}
+          </div>
 
           <!-- add piece to square -->
           <div class="piece" v-if="board?.fields[x][y]">
