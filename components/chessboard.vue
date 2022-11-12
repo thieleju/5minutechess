@@ -1,7 +1,9 @@
 <script setup>
 import { ref, computed, watch, onMounted } from "vue";
 
-const { pending, data: board } = useFetch("/api/game/board");
+const { pending, data: board } = useLazyAsyncData("board", () =>
+  $fetch("/api/game/board")
+);
 
 function get_piece_url(file) {
   return new URL(file, import.meta.url).href;
@@ -35,7 +37,7 @@ async function onDrop(evt, field_to) {
 <template>
   <div class="title">
     <v-icon class="my-auto" left>mdi-chess-queen</v-icon>
-    <p class="titleText text-h6">5 Minute Chess - Game 1</p>
+    <p class="titleText text-h6">5 Minute Chess - White to move</p>
   </div>
   <div class="ma-auto pa-auto" v-if="pending && !board?.fields">
     <v-progress-circular

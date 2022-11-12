@@ -1,16 +1,20 @@
 <script setup>
-import { ref, unref, computed, onMounted } from "vue";
+import { ref, unref, computed, onMounted, onUnmounted } from "vue";
 
 // For some reason, this is only working with an invalid activ_tab value (:
 const active_tab = ref(12);
 const time = ref("0:00");
+var interval_timer = null;
+var interval_votes = null;
 
-const { pending, data: current_game } = useFetch("/api/game/current_game");
+const { pending, data: current_game } = useLazyAsyncData("current_game", () =>
+  $fetch("/api/game/current_game")
+);
 
 onMounted(() => {
   // update timer every second
-  setInterval(async () => {
-    const timestamp = unref(current_game).timestamp_started;
+  interval_timer = setInterval(async () => {
+    const timestamp = unref(current_game).timestamp_current;
 
     // get difference between current time and timestamp
     const difference = new Date(timestamp).getTime() - new Date().getTime();
@@ -30,10 +34,14 @@ onMounted(() => {
   }, 1000);
 
   // update interval every 3 seconds to update votes
-  // setInterval(async () => {
-  //   console.log("refresh");
-  //   await refreshNuxtData("current_game");
-  // }, 3000);
+  interval_votes = setInterval(async () => {
+    await refreshNuxtData("current_game");
+  }, 3000);
+});
+
+onUnmounted(() => {
+  clearInterval(interval_timer);
+  clearInterval(interval_votes);
 });
 
 const votes_sorted = computed(() => {
@@ -75,8 +83,11 @@ function get_move_title(move) {
 
 <template>
   <div class="title">
-    <v-icon class="my-auto" left>mdi-information</v-icon>
-    <p class="titleText text-h6">Info</p>
+    <v-icon class="my-auto" left>mdi-chess-bishop</v-icon>
+    <p class="titleText text-h6">
+      Game {{ current_game.id_game }} started
+      {{ new Date(current_game.timestamp_current).toLocaleString() }}
+    </p>
     <v-spacer></v-spacer>
   </div>
   <div class="chessinfo">
@@ -115,7 +126,7 @@ function get_move_title(move) {
             </v-list-item>
             <v-list-item
               v-else
-              title="Go ahead and make the first move!"
+              title="No votes yet!"
               prepend-icon="mdi-chess-pawn"
             ></v-list-item>
           </v-list>
