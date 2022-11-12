@@ -27,6 +27,19 @@ export default class Board {
     this.apply_fen_to_board(fen);
   }
 
+  async check_if_move_is_valid(move: string): Promise<boolean> {
+    console.log("checking if move is valid: " + move);
+
+    // get field from move
+    const from = this.get_field_by_notation(move.slice(0, 2));
+    const to = this.get_field_by_notation(move.slice(2, 4));
+    console.log({ from }, { to });
+
+    // TODO calculate valid moves for piece on field
+
+    return true;
+  }
+
   make_move(move: string, color: string) {
     // get fields from move
     const from = this.get_field_by_notation(move.slice(0, 2));

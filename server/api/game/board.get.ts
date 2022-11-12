@@ -5,5 +5,5 @@ export default defineEventHandler(async () => {
 
   // console.log("request to board", board ? "yes" : "no");
 
-  return board || new Error("Board not ready yet!");
+  return board;
 });
