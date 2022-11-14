@@ -1,11 +1,6 @@
-import Board from "~~/server/utils/Board";
-import Game from "~~/server/utils/Game";
+import GameHandler from "~~/server/utils/GameHandler";
 
 export default defineEventHandler(async (event) => {
-  const game = await Game.get_instance();
-
-  if (!game) return null;
-
   // add vote to game
   // TODO get auth user from request
   const user = "user" + Math.floor(Math.random() * 1000);
@@ -13,9 +8,12 @@ export default defineEventHandler(async (event) => {
   // get body from request
   const body = await readBody(event);
 
+  if (!body) return { status: 400, body: "No body!" };
+  if (!body.move) return { status: 400, body: "No move!" };
+
   // check if move is valid
-  const board = await Board.get_instance();
-  const valid = await board.check_if_move_is_valid(body.move);
+  const game = await GameHandler.get_instance();
+  const valid = await game.make_vote(user, body.move);
   // throw createError({
   //   statusCode: 400,
   //   message: "Invalid move",
@@ -23,8 +21,6 @@ export default defineEventHandler(async (event) => {
   // });
 
   if (!valid) return { stauts: "error", message: "Invalid move" };
-
-  await game.add_vote(user, body.move);
 
   return { status: "ok" };
 });

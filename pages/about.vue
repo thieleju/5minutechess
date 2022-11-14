@@ -1,7 +1,7 @@
 <template>
   <v-main>
     <main-container
-      icon="mdi-details"
+      icon="mdi-information"
       text="About"
       :size="{
         xs: 12,

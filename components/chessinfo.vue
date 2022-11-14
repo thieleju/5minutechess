@@ -7,14 +7,14 @@ const time = ref("0:00");
 var interval_timer = null;
 var interval_votes = null;
 
-const { pending, data: current_game } = useLazyAsyncData("current_game", () =>
-  $fetch("/api/game/current_game")
+const { pending, data: vote_update } = useLazyAsyncData("vote_update", () =>
+  $fetch("/api/game/vote_update")
 );
 
 onMounted(() => {
   // update timer every second
   interval_timer = setInterval(async () => {
-    const timestamp = unref(current_game).timestamp_current;
+    const timestamp = unref(vote_update).timestamp_next;
 
     // get difference between current time and timestamp
     const difference = new Date(timestamp).getTime() - new Date().getTime();
@@ -35,7 +35,7 @@ onMounted(() => {
 
   // update interval every 3 seconds to update votes
   interval_votes = setInterval(async () => {
-    await refreshNuxtData("current_game");
+    await refreshNuxtData("vote_update");
   }, 3000);
 });
 
@@ -46,54 +46,45 @@ onUnmounted(() => {
 
 const votes_sorted = computed(() => {
   // get votes array from ref
-  const votes = unref(current_game).votes;
-  if (!votes && votes.length == 0) return [];
+  const votes = unref(vote_update).votes;
+  // console.log(votes[0], votes);
+  if (!votes) return [];
 
   let counted = [];
   votes.forEach((vote) => {
-    let found = counted.find((c) => c.move == vote.move);
+    let found = counted.find((c) => c.san == vote.san);
     if (found) {
       found.count++;
       found.users = [].concat(found.users, vote.user);
-      found.title = get_vote_title(vote.move, found.count, found.users);
+      found.title = get_vote_title(vote.san, found.count, found.users);
     } else
       counted.push({
-        move: vote.move,
+        san: vote.san,
         count: 1,
         users: [vote.user],
-        title: get_vote_title(vote.move, 1, [vote.user]),
+        title: get_vote_title(vote.san, 1, [vote.user]),
       });
   });
   // sort array by count
   return counted.sort((a, b) => b.count - a.count);
 });
 
-function get_vote_title(move, count, users) {
-  return `${move} | ${count} vote${count > 1 ? "s" : ""} | ${users.join(", ")}`;
+function get_vote_title(san, count, users) {
+  return `${san} | ${count} vote${count > 1 ? "s" : ""} | ${users.join(", ")}`;
 }
 
 function get_move_title(move) {
-  const user_str = [];
-  move.votes.forEach((vote) => {
-    user_str.push(vote.user);
-  });
-  return `${move.id_move + 1}. ${move.move} | ${user_str.join(", ")}`;
+  const is_white_move = move.move_nr % 2 == 0;
+  if (is_white_move)
+    return `${move.move_nr / 2 + 1}. ${move.san} | ${move.users.join(", ")}`;
+  else return `... ${move.san} | ${move.users.join(", ")}`;
 }
-
-const time_started = computed(() => {
-  const ts = unref(current_game).timestamp_started;
-  const date = new Date(ts).toLocaleString();
-  return date;
-});
 </script>
 
 <template>
   <div class="title">
     <v-icon class="my-auto" left>mdi-chess-bishop</v-icon>
-    <p class="titleText text-h6">
-      Game {{ current_game.id_game }}
-      <!-- started{{ time_started }} -->
-    </p>
+    <p class="titleText text-h6">Game {{ vote_update.id_game }}</p>
     <v-spacer></v-spacer>
   </div>
   <div class="chessinfo">
@@ -119,10 +110,10 @@ const time_started = computed(() => {
       <!-- VOTES -->
       <v-window-item>
         <v-card class="mx-2 mb-2" elevation="2">
-          <v-list class="overflow-y-auto" max-height="30vh">
+          <v-list class="overflow-y-auto" height="18vh">
             <!-- list with alternating colors -->
             <v-list-item
-              v-if="votes_sorted.length > 0"
+              v-if="votes_sorted?.length > 0"
               v-for="vote in votes_sorted"
               :key="vote.move"
               class="overflow-y-auto"
@@ -141,12 +132,12 @@ const time_started = computed(() => {
       <!-- MOVES -->
       <v-window-item>
         <v-card class="mx-2 mb-2" elevation="2">
-          <v-list class="overflow-y-auto" max-height="30vh">
+          <v-list class="overflow-y-auto" height="18vh">
             <!-- list with alternating colors -->
             <v-list-item
-              v-if="current_game.moves.length > 0"
-              v-for="move in current_game.moves"
-              :key="move.id_move"
+              v-if="vote_update.moves?.length > 0"
+              v-for="move in vote_update?.moves"
+              :key="move.move_nr"
               :title="get_move_title(move)"
               class="overflow-y-auto"
               prepend-icon="mdi-chess-pawn"

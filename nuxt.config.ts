@@ -5,14 +5,17 @@ export default defineNuxtConfig({
     "@mdi/font/css/materialdesignicons.min.css",
   ],
   plugins: [
-    {
-      src: "@/plugins/particles.js",
-      mode: "client",
-      ssr: false,
-    },
+    //   {
+    //     src: "@/plugins/particles.js",
+    //     mode: "client",
+    //     ssr: false,
+    //   },
+    // {
+    //   src: "@/plugins/chess.js",
+    // },
   ],
   build: {
-    transpile: ["vuetify"],
+    transpile: ["vuetify", "chess.js"],
   },
   vite: {
     define: {
