@@ -1,22 +1,22 @@
 <script setup>
 import { ref, computed } from "vue";
 
-const username = ref("0xju");
+// const username = ref("0xju");
 
-const { data } = await useFetch(
-  () => `https://api.chess.com/pub/player/${username.value}`
-);
+// const { data } = await useFetch(
+//   () => `https://api.chess.com/pub/player/${username.value}`
+// );
 
-const openLink = (link) => {
-  window.open(link, "_blank");
-};
+// const openLink = (link) => {
+//   window.open(link, "_blank");
+// };
 </script>
 
 <template>
   <v-main>
     <main-container
-      icon="mdi-account"
-      text="Chess Profiles"
+      icon="mdi-trophy"
+      text="Leaderboard"
       :size="{
         xs: 12,
         sm: 8,
@@ -25,11 +25,12 @@ const openLink = (link) => {
         xl: 4,
       }"
     >
-      <v-text-field
+      <p class="ma-auto">Leaderboard coming soon!</p>
+      <!-- <v-text-field
         v-model="username"
         label="Enter chess.com username"
-      ></v-text-field>
-      <v-card v-if="data">
+      ></v-text-field> -->
+      <!-- <v-card v-if="data">
         <v-row>
           <v-col class="mx-9 align-self-center">
             <v-card-title>{{ data?.username }}</v-card-title>
@@ -49,7 +50,7 @@ const openLink = (link) => {
       </v-card>
       <v-card v-else>
         <v-card-title>User `{{ username }}` could not be found!</v-card-title>
-      </v-card>
+      </v-card> -->
     </main-container>
   </v-main>
 </template>

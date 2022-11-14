@@ -12,6 +12,7 @@
     "nuxt": "3.0.0-rc.13"
   },
   "dependencies": {
+    "chess.js": "^1.0.0-alpha.0",
     "sass": "^1.56.0",
     "tsparticles": "^2.5.3",
     "vue3-particles": "^2.5.3",
