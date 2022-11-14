@@ -68,13 +68,37 @@ export default class GameHandler {
 
     // check if game is over
     if (game.is_game_over()) {
-      console.log("----------- Game over");
-      this.stop_game_loop();
+      // get game result and print it
+      const result = await this.get_game_result();
+      console.log(`Game ${this.id_game} over: ${result}`);
+      // TODO save to storage
+      this.start_new_game();
+      return;
     }
 
     // reset votes and timestamp
     this.timestamp_next = this.get_next_timestamp();
     this.votes = [];
+  }
+
+  async start_new_game() {
+    // reset everything and start new game
+    this.id_game++;
+    this.timestamp_started = new Date().getTime();
+    this.timestamp_next = this.get_next_timestamp();
+    this.votes = [];
+    // reset chess game
+    const chess_game = await ChessGame.get_instance();
+    chess_game.reset_game();
+
+    // TODO save to storage
+
+    console.log(`New game started: ${this.id_game}`);
+  }
+
+  async get_game_result(): Promise<string | null> {
+    const chess = await ChessGame.get_instance();
+    return chess.get_game_result();
   }
 
   async make_vote(user: string, move: any): Promise<boolean> {

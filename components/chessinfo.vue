@@ -4,7 +4,9 @@ import { ref, unref, computed, onMounted, onUnmounted } from "vue";
 // For some reason, this is only working with an invalid activ_tab value (:
 const active_tab = ref(12);
 const time = ref("0:00");
+
 const info_text = useInfoText();
+const game_result = useGameResult();
 
 var interval_timer = null;
 var interval_votes = null;
@@ -25,6 +27,11 @@ onMounted(() => {
     if (difference <= 0) {
       await refreshNuxtData(); // await navigateTo('/')
       info_text.value = "";
+
+      // check if game has ended
+      if (game_result.value)
+        info_text.value = `Game ended, ${game_result.value}!`;
+
       return;
     }
 
