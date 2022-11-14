@@ -4,6 +4,8 @@ import { ref, unref, computed, onMounted, onUnmounted } from "vue";
 // For some reason, this is only working with an invalid activ_tab value (:
 const active_tab = ref(12);
 const time = ref("0:00");
+const info_text = useInfoText();
+
 var interval_timer = null;
 var interval_votes = null;
 
@@ -22,6 +24,7 @@ onMounted(() => {
     // reload page when countdown is over
     if (difference <= 0) {
       await refreshNuxtData(); // await navigateTo('/')
+      info_text.value = "";
       return;
     }
 
@@ -31,6 +34,11 @@ onMounted(() => {
 
     // set time as countdown to timestamp
     time.value = `${minutes}:${seconds < 10 ? "0" + seconds : seconds}`;
+
+    // set dynamic site title
+    useHead({
+      title: `${time.value} - 5 Minute Chess`,
+    });
   }, 1000);
 
   // update interval every 3 seconds to update votes
@@ -154,7 +162,10 @@ function get_move_title(move) {
     </v-window>
     <v-divider></v-divider>
     <v-spacer></v-spacer>
-    <div class="text-center text-h6 py-3">
+    <div v-if="info_text" class="text-center text-h6 py-3">
+      {{ info_text }}
+    </div>
+    <div v-else class="text-center text-h6 py-3">
       Vote for a move by dragging the piece
     </div>
   </div>

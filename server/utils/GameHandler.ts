@@ -50,7 +50,6 @@ export default class GameHandler {
 
     // skip if no votes
     if (this.votes.length == 0) {
-      console.log("No votes, resetting timer");
       // reset timestamp
       this.timestamp_next = this.get_next_timestamp();
       // TODO save to storage
@@ -83,16 +82,22 @@ export default class GameHandler {
     const chess = await ChessGame.get_instance();
     if (!chess.is_move_valid(move.san)) return false;
 
+    const timestamp = new Date().getTime();
+
     // add new vote to array
     this.votes.push({
       id_game: this.id_game,
       id_vote: this.votes.length,
       user,
-      timestamp: new Date().getTime(),
+      timestamp,
       move_nr: chess.get_move_count(),
       san: move.san,
     });
-    console.log("Vote added", user, move.san);
+    console.log(
+      `[${new Date(timestamp).toISOString()}] ${user} voted for move: ${
+        move.san
+      }`
+    );
     return true;
   }
 
@@ -111,10 +116,13 @@ export default class GameHandler {
     // get timestamp when minute is modulo 5 in the future
     // e.g. 5:00, 5:05, 5:10, 5:15, ...
     const date = new Date();
+
+    // if in development mode, reduce time to 10 seconds
+    if (process.env.NODE_ENV == "development") return date.getTime() + 20000;
+
     const timestamp =
       date.getTime() +
-      // (5 - (date.getUTCMinutes() % 5)) * 60 * 1000 -
-      (2 - (date.getUTCMinutes() % 2)) * 60 * 1000 -
+      (5 - (date.getUTCMinutes() % 5)) * 60 * 1000 -
       date.getUTCSeconds() * 1000 -
       date.getUTCMilliseconds();
     return timestamp;
