@@ -79,7 +79,24 @@ export default class ChessGame {
       turn: this.chess.turn(), // 'w' | 'b'
       legal_moves: this.get_legal_moves(),
       board_setup: this.chess.board(),
+      game_result: this.get_game_result(),
     };
+  }
+
+  get_game_result():
+    | "checkmate"
+    | "stalemate"
+    | "insufficient material"
+    | "threefold repetition"
+    | "50 move rule"
+    | null {
+    if (this.chess.isCheckmate()) return "checkmate";
+    if (this.chess.isStalemate()) return "stalemate";
+    if (this.chess.isInsufficientMaterial()) return "insufficient material";
+    if (this.chess.isThreefoldRepetition()) return "threefold repetition";
+    if (!this.chess.isInsufficientMaterial && this.chess.isDraw())
+      return "50 move rule";
+    else return null;
   }
 
   is_game_over() {
@@ -92,5 +109,11 @@ export default class ChessGame {
 
   get_move_count() {
     return this.chess.history().length;
+  }
+
+  reset_game() {
+    this.moves = [];
+    this.chess.reset();
+    this.load_fen(this.fen_default);
   }
 }

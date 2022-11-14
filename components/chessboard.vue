@@ -6,6 +6,13 @@ const { pending, data: board } = useLazyAsyncData("board", () =>
 );
 
 const info_text = useInfoText();
+const game_result = useGameResult();
+
+watch(board, (new_board) => {
+  if (new_board.game_result) {
+    game_result.value = new_board.game_result;
+  }
+});
 
 const who_to_move = computed(() => {
   const color = unref(board).turn === "w" ? "White" : "Black";
