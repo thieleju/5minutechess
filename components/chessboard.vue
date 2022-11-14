@@ -2,7 +2,7 @@
 import { ref, computed, watch, onMounted } from "vue";
 
 const { pending, data: board } = useLazyAsyncData("board", () =>
-  $fetch("/api/game/board")
+  $fetch("/api/game/board_update")
 );
 
 async function vote_for_move(move) {
@@ -16,17 +16,35 @@ async function vote_for_move(move) {
 }
 
 function startDrag(e, item) {
+  if (!item) return;
   e.dataTransfer.dropEffect = "move";
   e.dataTransfer.effectAllowed = "move";
-  e.dataTransfer.setData("notation", item.notation);
+  e.dataTransfer.setData("square", item.square);
 }
 
 // move piece on drop
-async function onDrop(evt, field_to) {
-  const notation = evt.dataTransfer.getData("notation");
+async function onDrop(evt, xy) {
+  // to location might be null if theres no piece on the square
+  // because of that, we need to get the square from x and y coordinates
+  const letter = ["a", "b", "c", "d", "e", "f", "g", "h"][xy[1]];
+  const number = 8 - xy[0];
+  const to_square = letter + number;
+  const from_square = evt.dataTransfer.getData("square");
 
-  await vote_for_move(`${notation}${field_to.notation}`);
+  // check which legal move was made
+  const legal_moves = unref(board).legal_moves;
+  const move = legal_moves.find(
+    (move) => move.from == from_square && move.to == to_square
+  );
+  if (!move) return;
+
+  await vote_for_move(move);
   await refreshNuxtData();
+}
+
+function get_piece_img(item) {
+  if (!item) return;
+  return `/pieces/${item.color}_${item.type}.png`;
 }
 </script>
 
@@ -45,13 +63,13 @@ async function onDrop(evt, field_to) {
   <!-- css chessboard with 8x8 grid -->
   <div class="chessboard">
     <!-- loop through each row and column -->
-    <div class="row" v-for="(row, y) in board?.fields" :key="row">
-      <div class="column" v-for="(col, x) in board?.fields" :key="col">
+    <div class="row" v-for="(row, y) in board?.board_setup" :key="row">
+      <div class="column" v-for="(col, x) in board?.board_setup" :key="col">
         <!-- SQUARE -->
         <!-- alternate color of each square -->
         <div
           class="square drop-zone align-self-center"
-          @drop="onDrop($event, board?.fields[x][y])"
+          @drop="onDrop($event, `${x}${y}`)"
           @dragover.prevent
           @dragenter.prevent
           :class="{
@@ -59,22 +77,22 @@ async function onDrop(evt, field_to) {
             'black-square': (x + y) % 2 === 1,
           }"
         >
-          <div class="v-btn--absolute text-black">
-            {{ board?.fields[x][y].notation }} {{ x }} {{ y }}
-          </div>
+          <!-- <div class="v-btn--absolute text-black">
+            {{ board?.board_setup[x][y]?.square }}
+            {{ x }} {{ y }}
+          </div> -->
 
           <!-- add piece to square -->
-          <div class="piece" v-if="board?.fields[x][y]">
+          <div class="piece" v-if="board?.board_setup[x][y]">
             <!-- PIECE -->
             <v-img
-              v-if="board?.fields[x][y].piece"
-              :src="board?.fields[x][y].piece.image"
-              @dragstart="startDrag($event, board?.fields[x][y])"
+              v-if="board?.board_setup[x][y]"
+              :src="get_piece_img(board?.board_setup[x][y])"
+              @dragstart="startDrag($event, board?.board_setup[x][y])"
               draggable="true"
               link
               class="grabbable"
-            >
-            </v-img>
+            ></v-img>
           </div>
         </div>
       </div>
