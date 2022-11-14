@@ -13,6 +13,10 @@ const apps = [
     route: "/leaderboard",
   },
   {
+    name: "My Account",
+    route: "/account",
+  },
+  {
     name: "About",
     route: "/about",
   },

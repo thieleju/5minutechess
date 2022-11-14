@@ -5,6 +5,13 @@ const { pending, data: board } = useLazyAsyncData("board", () =>
   $fetch("/api/game/board_update")
 );
 
+const info_text = useInfoText();
+
+const who_to_move = computed(() => {
+  const color = unref(board).turn === "w" ? "White" : "Black";
+  return `${color} to move!`;
+});
+
 async function vote_for_move(move) {
   await $fetch("/api/game/vote_move", {
     headers: {
@@ -38,6 +45,8 @@ async function onDrop(evt, xy) {
   );
   if (!move) return;
 
+  info_text.value = "You voted for " + move.san;
+
   await vote_for_move(move);
   await refreshNuxtData();
 }
@@ -51,7 +60,7 @@ function get_piece_img(item) {
 <template>
   <div class="title">
     <v-icon class="my-auto" left>mdi-chess-queen</v-icon>
-    <p class="titleText text-h6">5 Minute Chess - White to move</p>
+    <p class="titleText text-h6">5 Minute Chess - {{ who_to_move }}</p>
   </div>
   <!-- <div class="ma-auto pa-auto" v-if="pending">
     <v-progress-circular
