@@ -4,18 +4,10 @@ export default defineNuxtConfig({
     "vuetify/lib/styles/main.sass",
     "@mdi/font/css/materialdesignicons.min.css",
   ],
-  plugins: [
-    //   {
-    //     src: "@/plugins/particles.js",
-    //     mode: "client",
-    //     ssr: false,
-    //   },
-    // {
-    //   src: "@/plugins/chess.js",
-    // },
-  ],
+  // plugins: [],
+  modules: ["@pinia/nuxt"],
   build: {
-    transpile: ["vuetify", "chess.js"],
+    transpile: ["vuetify", "chess.js", "jsonwebtoken", "pinia"],
   },
   vite: {
     define: {
@@ -55,10 +47,10 @@ export default defineNuxtConfig({
   },
   runtimeConfig: {
     // .env file overrides this
-    JWT_SECRET: "",
-    CLIENT_ID: "",
-    CLIENT_SECRET: "",
-    TOKEN_EXPIRATION: "",
+    JWT_SECRET: process.env.JWT_SECRET,
+    CLIENT_ID: process.env.CLIENT_ID,
+    CLIENT_SECRET: process.env.CLIENT_SECRET,
+    TOKEN_EXPIRATION: process.env.TOKEN_EXPIRATION,
     public: {
       apiBase: "/api",
     },

@@ -148,8 +148,8 @@ export default class GameHandler {
     // e.g. 5:00, 5:05, 5:10, 5:15, ...
     const date = new Date();
 
-    // if in development mode, reduce time to 15 seconds
-    if (process.env.NODE_ENV == "development") return date.getTime() + 15000;
+    // if in development mode, reduce time to 20 seconds
+    if (process.env.NODE_ENV == "development") return date.getTime() + 20000;
 
     const timestamp =
       date.getTime() +

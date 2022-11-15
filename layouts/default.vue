@@ -13,7 +13,7 @@ const apps = [
     route: "/leaderboard",
   },
   {
-    name: "My Account",
+    name: "Account",
     route: "/account",
   },
   {
