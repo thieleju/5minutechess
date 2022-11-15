@@ -15,7 +15,13 @@ const {
   pending,
   refresh,
   data: vote_update,
-} = useLazyAsyncData("vote_update", () => $fetch("/api/game/vote_update"));
+} = useLazyAsyncData(
+  "vote_update",
+  () => $fetch("/api/game/vote_update", { initialCache: false }),
+  {
+    initialCache: false,
+  }
+);
 
 onMounted(() => {
   // update timer every second
