@@ -1,16 +1,9 @@
 <script setup>
 import { ref, computed, watch, onMounted } from "vue";
 
-// const {
-//   pending,
-//   data: board,
-//   refresh,
-// } = useLazyAsyncData("board_update", () => $fetch("/api/game/board_update"));
+const voted_move = useVotedMove();
 
-const info_text = useInfoText();
-const game_result = useGameResult();
-
-const { data: vote_update, refresh: refresh_votes } = await useVoteUpdate();
+const { data: votes, refresh: refresh_votes } = await useVoteUpdate();
 const { data: board, refresh: refresh_board } = await useBoardUpdate();
 
 const who_to_move = computed(() => {
@@ -51,7 +44,7 @@ async function onDrop(evt, xy) {
   );
   if (!move) return;
 
-  info_text.value = "You voted for " + move.san;
+  voted_move.value = move.san;
 
   await vote_for_move(move);
 
@@ -93,10 +86,7 @@ function get_piece_img(item) {
             'black-square': (x + y) % 2 === 1,
           }"
         >
-          <!-- <div class="v-btn--absolute text-black">
-            {{ board?.board_setup[x][y]?.square }}
-            {{ x }} {{ y }}
-          </div> -->
+          <!-- TODO annotate chess board from x and y coordinates -->
 
           <!-- add piece to square -->
           <div class="piece" v-if="board?.board_setup[x][y]">
@@ -144,6 +134,9 @@ function get_piece_img(item) {
 .black-square {
   background-color: #699292;
   //background-color: #95b0b1;
+}
+.last-move {
+  filter: saturate(2.2);
 }
 .chessboard {
   display: grid;
