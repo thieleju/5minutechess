@@ -17,15 +17,21 @@ var interval_votes = null;
 //   data: vote_update,
 // } = useLazyAsyncData("vote_update", () => $fetch("/api/game/vote_update"));
 
-const { data: vote_update, refresh: refresh_votes } = await useVoteUpdate();
-const { data: board, refresh: refresh_board } = await useBoardUpdate();
+const { data: vote_update, refresh: refresh_votes } = await useAsyncData(
+  "vote_update",
+  () => $fetch(`/api/game/vote_update`)
+);
+const { data: board, refresh: refresh_board } = await useAsyncData(
+  "board_update",
+  () => $fetch(`/api/game/board_update`)
+);
 
-watch(vote_update, (data) => {
-  console.log("vote_update", data);
-});
-watch(board, (data) => {
-  console.log("board update", data);
-});
+// watch(vote_update, (data) => {
+//   console.log("vote_update", data);
+// });
+// watch(board, (data) => {
+//   console.log("board update", data);
+// });
 
 onMounted(() => {
   // update timer every second
