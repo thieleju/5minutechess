@@ -45,6 +45,14 @@ export default class GameHandler {
   }
 
   async game_tick() {
+    console.log(
+      "game tick",
+      this.votes,
+      "timer:",
+      new Date(this.timestamp_next).toLocaleTimeString(),
+      "server time:",
+      new Date().getTime()
+    );
     // check if time is up, no -> skip, yes -> new move
     if (new Date().getTime() < this.timestamp_next) return;
 
@@ -60,11 +68,9 @@ export default class GameHandler {
     // find most voted move
     const most_voted_move = this.find_most_voted_move();
     if (!most_voted_move) console.log("Error, No most voted move found");
-    console.log("most voted move found", most_voted_move?.san);
 
     // make move
     const game = await ChessGame.get_instance();
-    console.log("make move called");
     const move = game.make_move(most_voted_move!);
     if (!move) console.log("Error, Invalid move", move);
 
