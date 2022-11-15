@@ -19,12 +19,12 @@ var interval_votes = null;
 
 const { data: vote_update, refresh: refresh_votes } = await useAsyncData(
   "vote_update",
-  () => $fetch(`/api/game/board_update`),
+  () => $fetch(`/api/game/vote_update`),
   { initialCache: false }
 );
 const { data: board, refresh: refresh_board } = await useAsyncData(
   "board_update",
-  () => fetch(`/api/game/board_update`),
+  () => $fetch(`/api/game/board_update`),
   { initialCache: false }
 );
 
@@ -57,7 +57,7 @@ onMounted(() => {
       // board = await useBoardUpdate();
 
       console.log(
-        "vote_update nxext timestamp",
+        "vote_update next timestamp",
         new Date(unref(vote_update).timestamp_next).toLocaleTimeString()
       );
       info_text.value = "";
@@ -84,7 +84,7 @@ onMounted(() => {
 
   // update interval every 3 seconds to update votes
   interval_votes = setInterval(async () => {
-    // await refreshNuxtData("vote_update");
+    await refreshNuxtData("vote_update");
     await refresh_votes();
   }, 3000);
 });
