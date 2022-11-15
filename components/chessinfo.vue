@@ -11,11 +11,21 @@ const game_result = useGameResult();
 var interval_timer = null;
 var interval_votes = null;
 
-const {
-  pending,
-  refresh,
-  data: vote_update,
-} = useLazyAsyncData("vote_update", () => $fetch("/api/game/vote_update"));
+// const {
+//   pending,
+//   refresh,
+//   data: vote_update,
+// } = useLazyAsyncData("vote_update", () => $fetch("/api/game/vote_update"));
+
+const { data: vote_update, refresh: refresh_votes } = await useVoteUpdate();
+const { data: board, refresh: refresh_board } = await useBoardUpdate();
+
+watch(vote_update, (data) => {
+  console.log("vote_update", data);
+});
+watch(board, (data) => {
+  console.log("board update", data);
+});
 
 onMounted(() => {
   // update timer every second
@@ -29,10 +39,16 @@ onMounted(() => {
     if (difference <= 0) {
       // TODO manual refetch to avoid bug in production
       vote_update.value = await $fetch("/api/game/vote_update");
-      await refresh();
-      await refreshNuxtData(); // await navigateTo('/')
+      // await refresh();
+      // await refreshNuxtData("vote_update");
+      // await refreshNuxtData("board_update");
+      // vote_update = await useVoteUpdate();
+      // board = await useBoardUpdate();
+      await refresh_board();
+      await refresh_votes();
 
       console.log(
+        "vote_update nxext timestamp",
         new Date(unref(vote_update).timestamp_next).toLocaleTimeString()
       );
       info_text.value = "";
@@ -59,7 +75,8 @@ onMounted(() => {
 
   // update interval every 3 seconds to update votes
   interval_votes = setInterval(async () => {
-    await refreshNuxtData("vote_update");
+    // await refreshNuxtData("vote_update");
+    await refresh_votes();
   }, 3000);
 });
 
