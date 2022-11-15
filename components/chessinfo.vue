@@ -5,19 +5,18 @@ import { ref, unref, computed, onMounted, onUnmounted } from "vue";
 const active_tab = ref(12);
 const time = ref("0:00");
 
-const info_text = useInfoText();
-const game_result = useGameResult();
+const voted_move = useVotedMove();
 
 var interval_timer = null;
 var interval_votes = null;
 
-const { data: vote_update, refresh: refresh_votes } = await useVoteUpdate();
+const { data: votes, refresh: refresh_votes } = await useVoteUpdate();
 const { data: board, refresh: refresh_board } = await useBoardUpdate();
 
 onMounted(() => {
   // update timer every second
   interval_timer = setInterval(async () => {
-    const timestamp = unref(vote_update).timestamp_next;
+    const timestamp = unref(votes).timestamp_next;
 
     // get difference between current time and timestamp
     const difference = new Date(timestamp).getTime() - new Date().getTime();
@@ -27,31 +26,26 @@ onMounted(() => {
       // update data
       await refresh_board();
       await refresh_votes();
-
-      info_text.value = "";
-
-      // check if game has ended
-      if (game_result.value)
-        info_text.value = `Game ended, ${game_result.value}!`;
-
+      voted_move.value = "";
       return;
+    } else {
+      // calculate minutes and seconds from difference
+      const minutes = Math.floor(difference / 1000 / 60);
+      const seconds = Math.floor((difference / 1000) % 60);
+
+      // set time as countdown to timestamp
+      time.value = `${minutes}:${seconds < 10 ? "0" + seconds : seconds}`;
+
+      // set dynamic site title
+      useHead({
+        title: `${time.value} - 5 Minute Chess`,
+      });
     }
-
-    // calculate minutes and seconds from difference
-    const minutes = Math.floor(difference / 1000 / 60);
-    const seconds = Math.floor((difference / 1000) % 60);
-
-    // set time as countdown to timestamp
-    time.value = `${minutes}:${seconds < 10 ? "0" + seconds : seconds}`;
-
-    // set dynamic site title
-    useHead({
-      title: `${time.value} - 5 Minute Chess`,
-    });
   }, 1000);
 
   // update interval every 3 seconds to update votes
   interval_votes = setInterval(async () => {
+    // update votes data
     await refresh_votes();
   }, 3000);
 });
@@ -63,12 +57,12 @@ onUnmounted(() => {
 
 const votes_sorted = computed(() => {
   // get votes array from ref
-  const votes = unref(vote_update).votes;
+  const v = unref(votes).votes;
   // console.log(votes[0], votes);
-  if (!votes) return [];
+  if (!v) return [];
 
   let counted = [];
-  votes.forEach((vote) => {
+  v.forEach((vote) => {
     let found = counted.find((c) => c.san == vote.san);
     if (found) {
       found.count++;
@@ -101,7 +95,7 @@ function get_move_title(move) {
 <template>
   <div class="title">
     <v-icon class="my-auto" left>mdi-chess-bishop</v-icon>
-    <p class="titleText text-h6">Game {{ vote_update.id_game }}</p>
+    <p class="titleText text-h6">Game {{ votes.id_game }}</p>
     <v-spacer></v-spacer>
   </div>
   <div class="chessinfo">
@@ -152,8 +146,8 @@ function get_move_title(move) {
           <v-list class="overflow-y-auto" height="18vh">
             <!-- list with alternating colors -->
             <v-list-item
-              v-if="vote_update.moves?.length > 0"
-              v-for="move in vote_update?.moves"
+              v-if="votes.moves?.length > 0"
+              v-for="move in votes?.moves"
               :key="move.move_nr"
               :title="get_move_title(move)"
               class="overflow-y-auto"
@@ -171,11 +165,16 @@ function get_move_title(move) {
     </v-window>
     <v-divider></v-divider>
     <v-spacer></v-spacer>
-    <div v-if="info_text" class="text-center text-h6 py-3">
-      {{ info_text }}
+    <div v-if="votes.game_result" class="text-center text-h6 py-3">
+      Game ended: {{ votes.game_result }}
     </div>
     <div v-else class="text-center text-h6 py-3">
-      Vote for a move by dragging the piece
+      <div v-if="voted_move" class="text-center text-h6 py-3">
+        You voted for {{ voted_move }}
+      </div>
+      <div v-else class="text-center text-h6 py-3">
+        Vote for a move by dragging the piece
+      </div>
     </div>
   </div>
 </template>

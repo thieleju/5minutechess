@@ -1,7 +1,6 @@
 import ChessGame from "./ChessGame";
 import { Vote } from "./types/Vote";
 import { Move } from "./types/Move";
-import { Chess } from "chess.js";
 
 export default class GameHandler {
   //
@@ -12,6 +11,7 @@ export default class GameHandler {
   id_game: number = 1;
   timestamp_started: number = 0;
   timestamp_next: number = 0;
+  pause: boolean = false;
 
   votes: Vote[] = [];
 
@@ -45,6 +45,9 @@ export default class GameHandler {
   }
 
   async game_tick() {
+    // skip tick if paused
+    if (this.pause) return;
+
     // check if time is up, no -> skip, yes -> new move
     if (new Date().getTime() < this.timestamp_next) return;
 
@@ -72,13 +75,14 @@ export default class GameHandler {
       const result = await this.get_game_result();
       console.log(`Game ${this.id_game} over: ${result}`);
       // TODO save to storage
-      await this.start_new_game();
-      return;
+      this.pause = true;
+      // wait 5 seconds
+      setTimeout(async () => await this.start_new_game(), 5000);
+    } else {
+      // reset votes and timestamp
+      this.timestamp_next = this.get_next_timestamp();
+      this.votes = [];
     }
-
-    // reset votes and timestamp
-    this.timestamp_next = this.get_next_timestamp();
-    this.votes = [];
   }
 
   async start_new_game() {
@@ -90,6 +94,8 @@ export default class GameHandler {
     // reset chess game
     const chess_game = await ChessGame.get_instance();
     chess_game.reset_game();
+
+    this.pause = false;
 
     // TODO save to storage
 
@@ -133,6 +139,7 @@ export default class GameHandler {
       timestamp_next: this.timestamp_next,
       votes: this.votes,
       moves: chess_game.moves,
+      game_result: chess_game.get_game_result(),
     };
   }
 
@@ -141,8 +148,8 @@ export default class GameHandler {
     // e.g. 5:00, 5:05, 5:10, 5:15, ...
     const date = new Date();
 
-    // if in development mode, reduce time to 20 seconds
-    if (process.env.NODE_ENV == "development") return date.getTime() + 20000;
+    // if in development mode, reduce time to 15 seconds
+    if (process.env.NODE_ENV == "development") return date.getTime() + 15000;
 
     const timestamp =
       date.getTime() +
