@@ -25,6 +25,7 @@ onMounted(() => {
 
     // reload page when countdown is over
     if (difference <= 0) {
+      clearNuxtData();
       await refreshNuxtData(); // await navigateTo('/')
       info_text.value = "";
 
