@@ -66,7 +66,7 @@ export default class ChessGame {
     const chess_move = this.chess.move(move.san);
     // check if move is valid
     if (!chess_move) return false;
-    console.log("Move made: " + move.san, this.get_board_update());
+    console.log("Move made: " + move.san, this.get_board_update().fen);
     // add move to moves array
     this.moves.push(move);
     return true;
