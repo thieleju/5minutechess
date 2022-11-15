@@ -5,7 +5,9 @@ const {
   pending,
   data: board,
   re,
-} = useLazyAsyncData("board", () => $fetch("/api/game/board_update"));
+} = useLazyAsyncData("board", () => $fetch("/api/game/board_update"), {
+  initialCache: false,
+});
 
 const info_text = useInfoText();
 const game_result = useGameResult();
