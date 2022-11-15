@@ -46,12 +46,13 @@ export default class GameHandler {
 
   async game_tick() {
     console.log(
-      "game tick",
-      this.votes,
+      "game tick, votes:",
+      this.votes.length,
       "timer:",
       new Date(this.timestamp_next).toLocaleTimeString(),
       "server time:",
-      new Date().getTime()
+      new Date().toLocaleTimeString(),
+      new Date().getTime() < this.timestamp_next
     );
     // check if time is up, no -> skip, yes -> new move
     if (new Date().getTime() < this.timestamp_next) return;
