@@ -45,15 +45,6 @@ export default class GameHandler {
   }
 
   async game_tick() {
-    console.log(
-      "game tick, votes:",
-      this.votes.length,
-      "timer:",
-      new Date(this.timestamp_next).toLocaleTimeString(),
-      "server time:",
-      new Date().toLocaleTimeString(),
-      new Date().getTime() < this.timestamp_next
-    );
     // check if time is up, no -> skip, yes -> new move
     if (new Date().getTime() < this.timestamp_next) return;
 
@@ -150,7 +141,7 @@ export default class GameHandler {
     // e.g. 5:00, 5:05, 5:10, 5:15, ...
     const date = new Date();
 
-    // if in development mode, reduce time to 10 seconds
+    // if in development mode, reduce time to 20 seconds
     if (process.env.NODE_ENV == "development") return date.getTime() + 20000;
 
     const timestamp =
