@@ -9,13 +9,16 @@
   },
   "devDependencies": {
     "@mdi/font": "^7.0.96",
+    "@pinia/nuxt": "^0.4.3",
+    "pinia": "^2.0.0-rc.8",
+    "@types/jsonwebtoken": "^8.5.9",
     "nuxt": "3.0.0-rc.13"
   },
   "dependencies": {
     "chess.js": "^1.0.0-alpha.0",
+    "jsonwebtoken": "^8.5.1",
+    "pinia": "^2.0.23",
     "sass": "^1.56.0",
-    "tsparticles": "^2.5.3",
-    "vue3-particles": "^2.5.3",
     "vuetify": "^3.0.0"
   }
 }
