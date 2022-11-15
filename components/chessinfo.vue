@@ -11,29 +11,8 @@ const game_result = useGameResult();
 var interval_timer = null;
 var interval_votes = null;
 
-// const {
-//   pending,
-//   refresh,
-//   data: vote_update,
-// } = useLazyAsyncData("vote_update", () => $fetch("/api/game/vote_update"));
-
-const { data: vote_update, refresh: refresh_votes } = await useAsyncData(
-  "vote_update",
-  () => $fetch(`/api/game/vote_update`),
-  { initialCache: false }
-);
-const { data: board, refresh: refresh_board } = await useAsyncData(
-  "board_update",
-  () => $fetch(`/api/game/board_update`),
-  { initialCache: false }
-);
-
-// watch(vote_update, (data) => {
-//   console.log("vote_update", data);
-// });
-// watch(board, (data) => {
-//   console.log("board update", data);
-// });
+const { data: vote_update, refresh: refresh_votes } = await useVoteUpdate();
+const { data: board, refresh: refresh_board } = await useBoardUpdate();
 
 onMounted(() => {
   // update timer every second
@@ -45,21 +24,10 @@ onMounted(() => {
 
     // reload page when countdown is over
     if (difference <= 0) {
-      // TODO manual refetch to avoid bug in production
-      // vote_update.value = await $fetch("/api/game/vote_update");
-      // await refresh();
+      // update data
       await refresh_board();
       await refresh_votes();
 
-      await refreshNuxtData("vote_update");
-      await refreshNuxtData("board_update");
-      // vote_update = await useVoteUpdate();
-      // board = await useBoardUpdate();
-
-      // console.log(
-      //   "vote_update next timestamp",
-      //   new Date(unref(vote_update).timestamp_next).toLocaleTimeString()
-      // );
       info_text.value = "";
 
       // check if game has ended
@@ -84,7 +52,6 @@ onMounted(() => {
 
   // update interval every 3 seconds to update votes
   interval_votes = setInterval(async () => {
-    await refreshNuxtData("vote_update");
     await refresh_votes();
   }, 3000);
 });

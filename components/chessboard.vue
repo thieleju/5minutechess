@@ -10,20 +10,8 @@ import { ref, computed, watch, onMounted } from "vue";
 const info_text = useInfoText();
 const game_result = useGameResult();
 
-// const board = await useBoardUpdate();
-// const { data: vote_update, refresh: refresh_votes } = await useVoteUpdate();
-// const { data: board, refresh: refresh_board } = await useBoardUpdate();
-
-const { data: vote_update, refresh: refresh_votes } = await useAsyncData(
-  "vote_update",
-  () => $fetch(`/api/game/vote_update`),
-  { initialCache: false }
-);
-const { data: board, refresh: refresh_board } = await useAsyncData(
-  "board_update",
-  () => $fetch(`/api/game/board_update`),
-  { initialCache: false }
-);
+const { data: vote_update, refresh: refresh_votes } = await useVoteUpdate();
+const { data: board, refresh: refresh_board } = await useBoardUpdate();
 
 const who_to_move = computed(() => {
   const color = unref(board).turn === "w" ? "White" : "Black";
@@ -68,7 +56,6 @@ async function onDrop(evt, xy) {
   await vote_for_move(move);
 
   await refresh_votes();
-  await refreshNuxtData("vote_update");
 }
 
 function get_piece_img(item) {
