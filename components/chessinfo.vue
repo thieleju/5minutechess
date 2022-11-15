@@ -17,11 +17,15 @@ var interval_votes = null;
 //   data: vote_update,
 // } = useLazyAsyncData("vote_update", () => $fetch("/api/game/vote_update"));
 
-const { data: vote_update, refresh: refresh_votes } = await useFetch(
-  () => `/api/game/vote_update`
+const { data: vote_update, refresh: refresh_votes } = await useAsyncData(
+  "vote_update",
+  () => $fetch(`/api/game/board_update`),
+  { initialCache: false }
 );
-const { data: board, refresh: refresh_board } = await useFetch(
-  () => `/api/game/board_update`
+const { data: board, refresh: refresh_board } = await useAsyncData(
+  "board_update",
+  () => fetch(`/api/game/board_update`),
+  { initialCache: false }
 );
 
 // watch(vote_update, (data) => {
@@ -42,14 +46,15 @@ onMounted(() => {
     // reload page when countdown is over
     if (difference <= 0) {
       // TODO manual refetch to avoid bug in production
-      vote_update.value = await $fetch("/api/game/vote_update");
+      // vote_update.value = await $fetch("/api/game/vote_update");
       // await refresh();
-      // await refreshNuxtData("vote_update");
-      // await refreshNuxtData("board_update");
-      // vote_update = await useVoteUpdate();
-      // board = await useBoardUpdate();
       await refresh_board();
       await refresh_votes();
+
+      await refreshNuxtData("vote_update");
+      await refreshNuxtData("board_update");
+      // vote_update = await useVoteUpdate();
+      // board = await useBoardUpdate();
 
       console.log(
         "vote_update nxext timestamp",
