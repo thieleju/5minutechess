@@ -56,10 +56,10 @@ onMounted(() => {
       // vote_update = await useVoteUpdate();
       // board = await useBoardUpdate();
 
-      console.log(
-        "vote_update next timestamp",
-        new Date(unref(vote_update).timestamp_next).toLocaleTimeString()
-      );
+      // console.log(
+      //   "vote_update next timestamp",
+      //   new Date(unref(vote_update).timestamp_next).toLocaleTimeString()
+      // );
       info_text.value = "";
 
       // check if game has ended
