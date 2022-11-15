@@ -13,11 +13,15 @@ const game_result = useGameResult();
 // const board = await useBoardUpdate();
 // const { data: vote_update, refresh: refresh_votes } = await useVoteUpdate();
 // const { data: board, refresh: refresh_board } = await useBoardUpdate();
-const { data: vote_update, refresh: refresh_votes } = await useFetch(
-  () => `/api/game/vote_update`
+const { data: vote_update, refresh: refresh_votes } = await useAsyncData(
+  "vote_update",
+  () => $fetch(`/api/game/board_update`),
+  { initialCache: false }
 );
-const { data: board, refresh: refresh_board } = await useFetch(
-  () => `/api/game/board_update`
+const { data: board, refresh: refresh_board } = await useAsyncData(
+  "board_update",
+  () => fetch(`/api/game/board_update`),
+  { initialCache: false }
 );
 
 const who_to_move = computed(() => {
