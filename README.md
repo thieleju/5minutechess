@@ -1,5 +1,7 @@
 # 5minutechess
 
+[![Create and publish Docker image to ghcr.io](https://github.com/thieleju/5minutechess/actions/workflows/dockerize.yml/badge.svg?branch=main)](https://github.com/thieleju/5minutechess/actions/workflows/dockerize.yml)
+
 ![Preview Image](./preview.png)
 
 # Nuxt 3 Minimal Starter
