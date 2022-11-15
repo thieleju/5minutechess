@@ -11,9 +11,11 @@ const game_result = useGameResult();
 var interval_timer = null;
 var interval_votes = null;
 
-const { pending, data: vote_update } = useLazyAsyncData("vote_update", () =>
-  $fetch("/api/game/vote_update")
-);
+const {
+  pending,
+  refresh,
+  data: vote_update,
+} = useLazyAsyncData("vote_update", () => $fetch("/api/game/vote_update"));
 
 onMounted(() => {
   // update timer every second
@@ -25,7 +27,7 @@ onMounted(() => {
 
     // reload page when countdown is over
     if (difference <= 0) {
-      clearNuxtData();
+      await refresh();
       await refreshNuxtData(); // await navigateTo('/')
       info_text.value = "";
 
