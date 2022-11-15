@@ -27,8 +27,14 @@ onMounted(() => {
 
     // reload page when countdown is over
     if (difference <= 0) {
+      // TODO manual refetch to avoid bug in production
+      vote_update.value = await $fetch("/api/game/vote_update");
       await refresh();
       await refreshNuxtData(); // await navigateTo('/')
+
+      console.log(
+        new Date(unref(vote_update).timestamp_next).toLocaleTimeString()
+      );
       info_text.value = "";
 
       // check if game has ended

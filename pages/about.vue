@@ -16,7 +16,7 @@ const items = ref([
       "Account page with stats (games played, w/l/d, etc) and achievements",
   },
   {
-    title: "Create account with OAuth (GitHub, Discord, Google?, etc)",
+    title: "Create account with OAuth (Lichess, GitHub, Discord, Google?, etc)",
   },
   {
     title: "View history of games played",

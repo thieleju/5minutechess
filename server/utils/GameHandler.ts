@@ -72,7 +72,7 @@ export default class GameHandler {
       const result = await this.get_game_result();
       console.log(`Game ${this.id_game} over: ${result}`);
       // TODO save to storage
-      this.start_new_game();
+      await this.start_new_game();
       return;
     }
 
