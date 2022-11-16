@@ -5,7 +5,12 @@ export const useBoardUpdate = () => useFetch("/api/game/board_update");
 
 export const useStateUser = () => useState("state_user", () => null);
 
-export const useDoLogin = async () => {
-  const response = await $fetch("/api/auth/login");
+export const useDoLoginGithub = async () => {
+  const response = (await $fetch(`/api/auth/github/login`)) as any;
+  navigateTo(response.url, { external: true });
+};
+
+export const useDoLoginDiscord = async () => {
+  const response = (await $fetch(`/api/auth/discord/login`)) as any;
   navigateTo(response.url, { external: true });
 };

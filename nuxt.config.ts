@@ -49,6 +49,8 @@ export default defineNuxtConfig({
     // .env file overrides this
     GITHUB_CLIENT_ID: process.env.GITHUB_CLIENT_ID,
     GITHUB_CLIENT_SECRET: process.env.GITHUB_CLIENT_SECRET,
+    DISCORD_CLIENT_ID: process.env.DISCORD_CLIENT_ID,
+    DISCORD_CLIENT_SECRET: process.env.DISCORD_CLIENT_SECRET,
     JWT_SECRET: process.env.JWT_SECRET,
     JWT_TOKEN_EXPIRATION: process.env.JWT_TOKEN_EXPIRATION,
     public: {
