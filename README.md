@@ -7,6 +7,9 @@
 
 ## Environment Variables
 
+> **Warning:** <br>
+> Due to a bug in Nuxt 3, the pre-build docker container does not read environment variables at runtime. The env variables have to be provided at build time. <br>
+
 These environment variables are required to implement OAuth Login:
 
 ```html
