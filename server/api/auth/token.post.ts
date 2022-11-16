@@ -18,7 +18,7 @@ export default defineEventHandler(async (event) => {
 
     // sign userdata token
     const token = jwt.sign({ username: user.login }, runtimeConfig.JWT_SECRET, {
-      expiresIn: runtimeConfig.TOKEN_EXPIRATION,
+      expiresIn: runtimeConfig.JWT_TOKEN_EXPIRATION,
     });
 
     // send token
