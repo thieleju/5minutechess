@@ -8,7 +8,7 @@ export default defineEventHandler(async (event) => {
 
     if (!req_body.access_token) return { statusCode: 400, status: "error" };
 
-    const user: any = await $fetch("https://api.github.com/user", {
+    const user: any = await $fetch("https://discord.com/api/users/@me", {
       headers: {
         Authorization: "Bearer " + req_body.access_token,
         "Content-Type": "application/json",
@@ -17,15 +17,19 @@ export default defineEventHandler(async (event) => {
     });
 
     // sign userdata token
-    const token = jwt.sign({ username: user.login }, runtimeConfig.JWT_SECRET, {
-      expiresIn: runtimeConfig.JWT_TOKEN_EXPIRATION,
-    });
+    const token = jwt.sign(
+      { username: user.username },
+      runtimeConfig.JWT_SECRET,
+      {
+        expiresIn: runtimeConfig.JWT_TOKEN_EXPIRATION,
+      }
+    );
 
     // send token
     return {
       status: "ok",
       access_token: req_body.access_token,
-      user: user,
+      username: user.username,
       jwt: token,
     };
   } catch (e) {

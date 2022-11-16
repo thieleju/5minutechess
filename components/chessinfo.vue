@@ -173,8 +173,19 @@ function get_move_title(move) {
       </div>
 
       <div v-if="!state_user">
-        <v-btn color="background" @click="useDoLogin" prepend-icon="mdi-github"
+        <v-btn
+          color="background"
+          @click="useDoLoginGithub"
+          prepend-icon="mdi-github"
+          class="mx-2"
           >Github Login</v-btn
+        >
+        <v-btn
+          color="background"
+          @click="useDoLoginDiscord"
+          prepend-icon="mdi-ghost"
+          class="mx-2"
+          >Discord Login</v-btn
         >
       </div>
 
