@@ -4,6 +4,19 @@
 
 ![Preview Image](./preview.png)
 
+
+## Environment Variables
+
+These environment variables are required to implement OAuth Login:
+
+```html
+GITHUB_CLIENT_ID=<github oauth>
+GITHUB_CLIENT_SECRET=<github oauth>
+JWT_TOKEN_EXPIRATION=1d
+JWT_SECRET=<random string>
+BASE_URL=http://localhost:3000
+```
+
 # Nuxt 3 Minimal Starter
 
 Look at the [nuxt 3 documentation](https://v3.nuxtjs.org) to learn more.

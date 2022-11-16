@@ -47,12 +47,13 @@ export default defineNuxtConfig({
   },
   runtimeConfig: {
     // .env file overrides this
+    GITHUB_CLIENT_ID: process.env.GITHUB_CLIENT_ID,
+    GITHUB_CLIENT_SECRET: process.env.GITHUB_CLIENT_SECRET,
     JWT_SECRET: process.env.JWT_SECRET,
-    CLIENT_ID: process.env.CLIENT_ID,
-    CLIENT_SECRET: process.env.CLIENT_SECRET,
-    TOKEN_EXPIRATION: process.env.TOKEN_EXPIRATION,
+    JWT_TOKEN_EXPIRATION: process.env.JWT_TOKEN_EXPIRATION,
     public: {
       apiBase: "/api",
+      BASE_URL: process.env.BASE_URL,
     },
   },
 });
