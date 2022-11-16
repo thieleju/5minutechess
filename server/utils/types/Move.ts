@@ -4,5 +4,6 @@ export type Move = {
   vote_count: number;
   users: string[];
   timestamp: number;
+  turn: "w" | "b";
   promotion?: string;
 };
