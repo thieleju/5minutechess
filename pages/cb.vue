@@ -20,6 +20,8 @@ onMounted(async () => {
     body: { access_token: access_token.value },
   });
 
+  if (!response.success) return;
+
   state_user.value = {
     platform,
     username: response.username,
