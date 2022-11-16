@@ -17,17 +17,18 @@ onMounted(async () => {
   });
 
   state_user.value = {
-    username: response.user.login,
     platform: "github",
+    username: response.user.login,
+    access_token: response.access_token,
+    jwt: response.jwt,
   };
+  localStorage.setItem("state_user", JSON.stringify(state_user.value));
 
   // store_user.set_access_token(response.access_token);
   // store_user.set_jwt(response.jwt);
   // store_user.set_user_github(response);
 
-  // console.log("username", store_user.get_username);
-
-  navigateTo("/account");
+  navigateTo("/");
 });
 </script>
 

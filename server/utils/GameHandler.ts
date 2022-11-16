@@ -3,7 +3,6 @@ import { Vote } from "./types/Vote";
 import { Move } from "./types/Move";
 
 export default class GameHandler {
-  //
   GAME_DB_ITEM: string = "db:game_current.json";
   GAME_TICK_RATE: number = 1000;
   GAME_INVERVAL: NodeJS.Timer | undefined;
@@ -157,6 +156,10 @@ export default class GameHandler {
       date.getUTCSeconds() * 1000 -
       date.getUTCMilliseconds();
     return timestamp;
+  }
+
+  has_user_voted(user: string): undefined | Vote {
+    return this.votes.find((vote) => vote.user == user);
   }
 
   find_most_voted_move(): Move | undefined {
