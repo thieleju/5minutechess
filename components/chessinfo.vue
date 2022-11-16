@@ -178,7 +178,7 @@ function get_move_title(move) {
         >
       </div>
 
-      <div v-if="state_user" class="text-center text-h6 py-3">
+      <div v-if="state_user && !info_text" class="text-center text-h6 py-3">
         Vote by dragging the piece, <strong>{{ state_user.username }}</strong>
       </div>
     </div>

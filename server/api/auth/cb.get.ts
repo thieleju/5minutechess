@@ -8,8 +8,8 @@ export default defineEventHandler(async (event) => {
     const runtimeConfig = useRuntimeConfig();
 
     const body = {
-      client_id: runtimeConfig.CLIENT_ID,
-      client_secret: runtimeConfig.CLIENT_SECRET,
+      client_id: runtimeConfig.GITHUB_CLIENT_ID,
+      client_secret: runtimeConfig.GITHUB_CLIENT_SECRET,
       code: query.code,
     };
 
@@ -19,7 +19,7 @@ export default defineEventHandler(async (event) => {
       { method: "POST", body }
     );
 
-    const url = "http://localhost:3000/cb?access_token=" + data.access_token;
+    const url = `${runtimeConfig.public.BASE_URL}/cb?access_token=${data.access_token}`;
     // redirect
     return sendRedirect(event, url, 301);
   } catch (e) {
