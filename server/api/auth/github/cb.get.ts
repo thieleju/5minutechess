@@ -19,7 +19,7 @@ export default defineEventHandler(async (event) => {
       { method: "POST", body }
     );
 
-    const url = `${runtimeConfig.public.BASE_URL}/cb?access_token=${data.access_token}&platform=discord`;
+    const url = `${runtimeConfig.public.BASE_URL}/cb?access_token=${data.access_token}&platform=github`;
     // redirect
     return sendRedirect(event, url, 301);
   } catch (e) {
