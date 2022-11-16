@@ -5,14 +5,7 @@ watch(state_user, (new_user) => {
   console.log("user changed", new_user);
 });
 
-async function doLogin() {
-  const response = await $fetch("/api/auth/login");
-  navigateTo(response.url, { external: true });
-}
-
-async function doLogout() {
-  console.log("logout");
-}
+async function doLogout() {}
 </script>
 
 <template>
@@ -32,10 +25,10 @@ async function doLogout() {
         Logged in as <strong>{{ state_user.username }}</strong> ({{
           state_user.platform
         }})
-        <v-btn color="background" @click="doLogout">Logout</v-btn>
+        <!-- <v-btn color="background" @click="doLogout">Logout</v-btn> -->
       </div>
       <div v-else class="ma-auto">
-        <v-btn color="background" @click="doLogin" prepend-icon="mdi-github"
+        <v-btn color="background" @click="useDoLogin" prepend-icon="mdi-github"
           >Login with GitHub</v-btn
         >
       </div>

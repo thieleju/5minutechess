@@ -1,6 +1,4 @@
 <script setup>
-import { ref, computed } from "vue";
-
 // const username = ref("0xju");
 
 // const { data } = await useFetch(
