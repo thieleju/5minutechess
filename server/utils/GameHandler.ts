@@ -121,6 +121,7 @@ export default class GameHandler {
       timestamp,
       move_nr: chess.get_move_count(),
       san: move.san,
+      turn: chess.get_turn(),
     });
     console.log(
       `[${new Date(timestamp).toISOString()}] ${user} voted for move: ${
@@ -176,6 +177,7 @@ export default class GameHandler {
           vote_count: 1,
           move_nr: vote.move_nr,
           users: [vote.user],
+          turn: vote.turn,
           timestamp: vote.timestamp,
         });
     });

@@ -111,6 +111,10 @@ export default class ChessGame {
     return this.chess.history().length;
   }
 
+  get_turn() {
+    return this.chess.turn();
+  }
+
   reset_game() {
     this.moves = [];
     this.chess.reset();

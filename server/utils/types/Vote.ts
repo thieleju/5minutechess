@@ -5,4 +5,5 @@ export type Vote = {
   timestamp: number;
   move_nr: number;
   san: string;
+  turn: "w" | "b";
 };
