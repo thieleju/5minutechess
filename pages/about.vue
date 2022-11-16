@@ -50,6 +50,16 @@ const items = ref([
         >
         </v-list-item>
       </v-list>
+      <v-btn
+        class="mx-auto mb-5"
+        color="background"
+        @click="
+          navigateTo('https://github.com/thieleju/5minutechess', {
+            external: true,
+          })
+        "
+        >❤️ View this project on GitHub</v-btn
+      >
     </main-container>
   </v-main>
 </template>

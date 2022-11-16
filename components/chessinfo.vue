@@ -1,11 +1,10 @@
 <script setup>
-import { ref, unref, computed, onMounted, onUnmounted } from "vue";
-
 // For some reason, this is only working with an invalid activ_tab value (:
 const active_tab = ref(12);
 const time = ref("0:00");
 
-const voted_move = useVotedMove();
+const info_text = useInfoText();
+const state_user = useStateUser();
 
 var interval_timer = null;
 var interval_votes = null;
@@ -26,7 +25,7 @@ onMounted(() => {
       // update data
       await refresh_board();
       await refresh_votes();
-      voted_move.value = "";
+      info_text.value = "";
       return;
     } else {
       // calculate minutes and seconds from difference
@@ -47,7 +46,7 @@ onMounted(() => {
   interval_votes = setInterval(async () => {
     // update votes data
     await refresh_votes();
-  }, 3000);
+  }, 5000);
 });
 
 onUnmounted(() => {
@@ -169,11 +168,18 @@ function get_move_title(move) {
       Game ended: {{ votes.game_result }}
     </div>
     <div v-else class="text-center text-h6 py-3">
-      <div v-if="voted_move" class="text-center text-h6 py-3">
-        You voted for {{ voted_move }}
+      <div v-if="info_text" class="text-center text-h6 py-3">
+        {{ info_text }}
       </div>
-      <div v-else class="text-center text-h6 py-3">
-        Vote for a move by dragging the piece
+
+      <div v-if="!state_user">
+        <v-btn color="background" @click="useDoLogin" prepend-icon="mdi-github"
+          >Github Login</v-btn
+        >
+      </div>
+
+      <div v-if="state_user" class="text-center text-h6 py-3">
+        Vote by dragging the piece, <strong>{{ state_user.username }}</strong>
       </div>
     </div>
   </div>

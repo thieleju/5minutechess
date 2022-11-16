@@ -3,7 +3,7 @@ export default defineEventHandler(async (event) => {
     // get code from query
     const query = getQuery(event);
 
-    if (!query.code) return { status: "error" };
+    if (!query.code) return { statusCode: 400, status: "error" };
 
     const runtimeConfig = useRuntimeConfig();
 
@@ -24,6 +24,6 @@ export default defineEventHandler(async (event) => {
     return sendRedirect(event, url, 301);
   } catch (e) {
     console.log(e);
-    return { status: "error" };
+    return { statusCode: 400, status: "error" };
   }
 });

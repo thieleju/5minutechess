@@ -1,7 +1,6 @@
 <script setup>
-import { ref, computed, watch, onMounted } from "vue";
-
-const voted_move = useVotedMove();
+const info_text = useInfoText();
+const state_user = useStateUser();
 
 const { data: votes, refresh: refresh_votes } = await useVoteUpdate();
 const { data: board, refresh: refresh_board } = await useBoardUpdate();
@@ -12,9 +11,10 @@ const who_to_move = computed(() => {
 });
 
 async function vote_for_move(move) {
-  await $fetch("/api/game/vote_move", {
+  return $fetch("/api/game/vote_move", {
     headers: {
       "Content-Type": "application/json",
+      Authorization: `Bearer ${unref(state_user)?.jwt}`,
     },
     method: "POST",
     body: { move },
@@ -44,10 +44,14 @@ async function onDrop(evt, xy) {
   );
   if (!move) return;
 
-  voted_move.value = move.san;
+  const response = await vote_for_move(move);
 
-  await vote_for_move(move);
+  if (response.status === "error") {
+    info_text.value = response.message;
+    return;
+  }
 
+  info_text.value = `You voted for ${move.san}`;
   await refresh_votes();
 }
 
@@ -62,13 +66,6 @@ function get_piece_img(item) {
     <v-icon class="my-auto" left>mdi-chess-queen</v-icon>
     <p class="titleText text-h6">5 Minute Chess - {{ who_to_move }}</p>
   </div>
-  <!-- <div class="ma-auto pa-auto" v-if="pending">
-    <v-progress-circular
-      class="ma-auto pa-auto"
-      indeterminate
-      color="primary"
-    ></v-progress-circular>
-  </div> -->
   <!-- css chessboard with 8x8 grid -->
   <div class="chessboard">
     <!-- loop through each row and column -->

@@ -6,7 +6,7 @@ export default defineEventHandler(async (event) => {
     const req_body = await readBody(event);
     const runtimeConfig = useRuntimeConfig();
 
-    if (!req_body.access_token) return { status: "error" };
+    if (!req_body.access_token) return { statusCode: 400, status: "error" };
 
     const user: any = await $fetch("https://api.github.com/user", {
       headers: {
@@ -17,7 +17,7 @@ export default defineEventHandler(async (event) => {
     });
 
     // sign userdata token
-    const token = jwt.sign({ login: user.login }, runtimeConfig.JWT_SECRET, {
+    const token = jwt.sign({ username: user.login }, runtimeConfig.JWT_SECRET, {
       expiresIn: runtimeConfig.TOKEN_EXPIRATION,
     });
 
@@ -29,7 +29,6 @@ export default defineEventHandler(async (event) => {
       jwt: token,
     };
   } catch (e) {
-    console.log(e);
-    return { status: "error" };
+    return { statusCode: 400, status: "error" };
   }
 });

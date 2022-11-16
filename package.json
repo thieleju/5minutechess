@@ -10,9 +10,9 @@
   "devDependencies": {
     "@mdi/font": "^7.0.96",
     "@pinia/nuxt": "^0.4.3",
-    "pinia": "^2.0.0-rc.8",
     "@types/jsonwebtoken": "^8.5.9",
-    "nuxt": "3.0.0-rc.13"
+    "nuxt": "3.0.0-rc.13",
+    "pinia": "^2.0.0-rc.8"
   },
   "dependencies": {
     "chess.js": "^1.0.0-alpha.0",

@@ -1,6 +1,4 @@
-<script setup>
-// import { ref, computed } from "vue";
-</script>
+<script setup></script>
 
 <template>
   <v-main>
