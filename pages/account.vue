@@ -27,20 +27,32 @@ async function doLogout() {}
         }})
         <!-- <v-btn color="background" @click="doLogout">Logout</v-btn> -->
       </div>
-      <div v-else class="ma-auto">
-        <v-btn
-          color="background"
-          @click="useDoLoginGithub"
-          prepend-icon="mdi-github"
-          >Login with GitHub</v-btn
-        >
-        <v-btn
-          color="background"
-          @click="useDoLoginDiscord"
-          prepend-icon="mdi-ghost"
-          >Login with Discord</v-btn
-        >
-      </div>
+      <v-row v-else class="ma-auto text-center">
+        <v-col cols="12">
+          <v-btn
+            color="background"
+            @click="useDoLoginGithub"
+            prepend-icon="mdi-github"
+            >Login with GitHub</v-btn
+          >
+        </v-col>
+        <v-col cols="12">
+          <v-btn
+            color="background"
+            @click="useDoLoginDiscord"
+            prepend-icon="mdi-ghost"
+            >Login with Discord</v-btn
+          >
+        </v-col>
+        <v-col cols="12">
+          <v-btn
+            color="background"
+            @click="useDoLoginLichess"
+            prepend-icon="mdi-chess-knight"
+            >Login with Lichess</v-btn
+          >
+        </v-col>
+      </v-row>
     </main-container>
   </v-main>
 </template>

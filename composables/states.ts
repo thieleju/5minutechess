@@ -14,3 +14,8 @@ export const useDoLoginDiscord = async () => {
   const response = (await $fetch(`/api/auth/discord/login`)) as any;
   navigateTo(response.url, { external: true });
 };
+
+export const useDoLoginLichess = async () => {
+  const response = (await $fetch(`/api/auth/lichess/login`)) as any;
+  navigateTo(response.url, { external: true });
+};

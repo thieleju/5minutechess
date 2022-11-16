@@ -7,7 +7,7 @@ export default defineNuxtConfig({
   // plugins: [{ src: "" }],
   modules: ["@pinia/nuxt"],
   build: {
-    transpile: ["vuetify", "chess.js", "jsonwebtoken", "pinia"],
+    transpile: ["vuetify", "chess.js", "jsonwebtoken"],
   },
   vite: {
     define: {
@@ -51,6 +51,8 @@ export default defineNuxtConfig({
     GITHUB_CLIENT_SECRET: process.env.GITHUB_CLIENT_SECRET,
     DISCORD_CLIENT_ID: process.env.DISCORD_CLIENT_ID,
     DISCORD_CLIENT_SECRET: process.env.DISCORD_CLIENT_SECRET,
+    LICHESS_CLIENT_ID: process.env.LICHESS_CLIENT_ID,
+    LICHESS_CLIENT_SECRET: process.env.LICHESS_CLIENT_SECRET,
     JWT_SECRET: process.env.JWT_SECRET,
     JWT_TOKEN_EXPIRATION: process.env.JWT_TOKEN_EXPIRATION,
     public: {
