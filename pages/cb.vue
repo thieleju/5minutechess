@@ -20,7 +20,10 @@ onMounted(async () => {
     body: { access_token: access_token.value },
   });
 
-  if (!response.success) return;
+  if (!response.username) {
+    navigateTo("/");
+    return;
+  }
 
   state_user.value = {
     platform,
