@@ -15,6 +15,10 @@ These environment variables are required to implement OAuth Login:
 ```html
 GITHUB_CLIENT_ID=<github oauth>
 GITHUB_CLIENT_SECRET=<github oauth>
+DISCORD_CLIENT_ID=<discord oauth>
+DISCORD_CLIENT_SECRET=<discord oauth>
+LICHESS_CLIENT_ID=<lichess oauth>
+LICHESS_CLIENT_SECRET=<lichess oauth>
 JWT_TOKEN_EXPIRATION=1d
 JWT_SECRET=<random string>
 BASE_URL=http://localhost:3000

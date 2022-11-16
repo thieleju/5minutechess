@@ -164,7 +164,7 @@ function get_move_title(move) {
     </v-window>
     <v-divider></v-divider>
     <v-spacer></v-spacer>
-    <div v-if="votes.game_result" class="text-center text-h6 py-3">
+    <div v-if="votes.game_result" class="text-center text-h6">
       Game ended: {{ votes.game_result }}
     </div>
     <div v-else class="text-center text-h6 py-3">
@@ -175,17 +175,24 @@ function get_move_title(move) {
       <div v-if="!state_user">
         <v-btn
           color="background"
-          @click="useDoLoginGithub"
-          prepend-icon="mdi-github"
-          class="mx-2"
-          >Github Login</v-btn
+          @click="useDoLoginLichess"
+          prepend-icon="mdi-chess-knight"
+          class="mx-1"
+          >Lichess</v-btn
         >
         <v-btn
           color="background"
           @click="useDoLoginDiscord"
           prepend-icon="mdi-ghost"
-          class="mx-2"
-          >Discord Login</v-btn
+          class="mx-1"
+          >Discord</v-btn
+        >
+        <v-btn
+          color="background"
+          @click="useDoLoginGithub"
+          prepend-icon="mdi-github"
+          class="mx-1"
+          >GitHub</v-btn
         >
       </div>
 
