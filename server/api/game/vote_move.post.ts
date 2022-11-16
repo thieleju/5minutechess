@@ -11,7 +11,7 @@ export default defineEventHandler(async (event) => {
     return {
       statusCode: 401,
       status: "error",
-      message: "Unauthorized, please log in first!",
+      message: "Log in to make a move",
     };
   if (!user.username)
     return { statusCode: 401, status: "error", message: "Invalid decoded JWT" };
