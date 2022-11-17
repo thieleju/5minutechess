@@ -60,43 +60,6 @@ onUnmounted(() => {
   clearInterval(interval_timer);
   clearInterval(interval_votes);
 });
-
-const votes_sorted = computed(() => {
-  // get votes array from ref
-  const v = unref(votes).votes;
-  // console.log(votes[0], votes);
-  if (!v) return [];
-
-  let counted = [];
-  v.forEach((vote) => {
-    let found = counted.find((c) => c.san == vote.san);
-    if (found) {
-      found.count++;
-      found.users = [].concat(found.users, vote.user);
-    } else
-      counted.push({
-        san: vote.san,
-        move_nr: vote.move_nr,
-        count: 1,
-        users: [vote.user],
-        piece: vote.piece,
-        flags: vote.flags,
-      });
-  });
-  // sort array by count
-  return counted.sort((a, b) => b.count - a.count);
-});
-
-function get_vote_title(san, count, users) {
-  return `${san} | ${count} vote${count > 1 ? "s" : ""} | ${users.join(", ")}`;
-}
-
-function get_move_title(move) {
-  const is_white_move = move.move_nr % 2 == 0;
-  if (is_white_move)
-    return `${move.move_nr / 2 + 1}. ${move.san} | ${move.users.join(", ")}`;
-  else return `... ${move.san} | ${move.users.join(", ")}`;
-}
 </script>
 
 <template>
@@ -129,34 +92,15 @@ function get_move_title(move) {
       <v-window-item>
         <v-card class="mx-2 mb-2 ma-auto" elevation="2">
           <v-list class="overflow-y-auto" height="18vh">
-            <vote
-              v-for="vote in votes_sorted"
-              :vote="vote"
-              :count_max="Math.max(...votes_sorted.map((v) => v.count))"
-            ></vote>
-            <vote v-if="!votes_sorted.length"></vote>
+            <votes-comp></votes-comp>
           </v-list>
         </v-card>
       </v-window-item>
       <!-- MOVES -->
       <v-window-item>
-        <v-card class="mx-2 mb-2" elevation="2">
+        <v-card class="mx-2 mb-2 ma-auto" elevation="2">
           <v-list class="overflow-y-auto" height="18vh">
-            <!-- list with alternating colors -->
-            <v-list-item
-              v-if="votes.moves?.length > 0"
-              v-for="move in votes?.moves"
-              :key="move.move_nr"
-              :title="get_move_title(move)"
-              class="overflow-y-auto"
-              prepend-icon="mdi-chess-pawn"
-            >
-            </v-list-item>
-            <v-list-item
-              v-else
-              title="No moves yet!"
-              prepend-icon="mdi-chess-pawn"
-            ></v-list-item>
+            <moves-comp></moves-comp>
           </v-list>
         </v-card>
       </v-window-item>
