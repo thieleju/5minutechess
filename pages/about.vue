@@ -29,7 +29,7 @@ const items = ref([
   <v-main>
     <main-container
       icon="mdi-information"
-      text="About"
+      text="5 Minute Chess - About"
       :size="{
         xs: 12,
         sm: 8,
@@ -38,6 +38,12 @@ const items = ref([
         xl: 5,
       }"
     >
+      <v-card-title class="text-h5 ml-10 mt-5"
+        >5 Minute Chess - Early Demo</v-card-title
+      >
+      <v-card-title class="ml-10 mt-5"
+        >Every 5 minutes the most voted chess move is played on the board.
+      </v-card-title>
       <v-card-title class="ml-10 mt-5">Planned features:</v-card-title>
       <v-list class="my-5 mx-10">
         <v-list-item
