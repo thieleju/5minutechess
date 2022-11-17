@@ -23,7 +23,7 @@
         xl: 4,
       }"
     >
-      <p class="ma-auto">Leaderboard coming soon!</p>
+      <v-card-title class="ma-auto">Leaderboard coming soon!</v-card-title>
       <!-- <v-text-field
         v-model="username"
         label="Enter chess.com username"
