@@ -1,10 +1,6 @@
 <script setup>
 const state_user = useStateUser();
 
-watch(state_user, (new_user) => {
-  console.log("user changed", new_user);
-});
-
 async function doLogout() {}
 </script>
 
