@@ -16,9 +16,6 @@ const items = ref([
       "Account page with stats (games played, w/l/d, etc) and achievements",
   },
   {
-    title: "Create account with OAuth (Lichess, GitHub, Discord, Google?, etc)",
-  },
-  {
     title: "View history of games played",
   },
   {
@@ -26,6 +23,7 @@ const items = ref([
   },
 ]);
 </script>
+// q: what is the meaning of life? //
 
 <template>
   <v-main>

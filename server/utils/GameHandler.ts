@@ -122,6 +122,8 @@ export default class GameHandler {
       move_nr: chess.get_move_count(),
       san: move.san,
       turn: chess.get_turn(),
+      piece: move.piece,
+      flags: move.flags,
     });
     console.log(
       `[${new Date(timestamp).toISOString()}] ${user} voted for move: ${

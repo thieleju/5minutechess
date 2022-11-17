@@ -6,4 +6,6 @@ export type Vote = {
   move_nr: number;
   san: string;
   turn: "w" | "b";
+  piece: string;
+  flags: string;
 };
