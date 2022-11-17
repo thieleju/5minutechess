@@ -42,9 +42,7 @@ function get_piece_icon(piece) {
   </div>
   <div v-if="!board.moves?.length" class="fill-height ma-auto text-center">
     <v-list-item class="fill-height">
-      <v-card-title
-        >{{ board.turn == "w" ? "White" : "Black" }} to move!
-      </v-card-title>
+      <v-card-title> No moves yet!</v-card-title>
     </v-list-item>
   </div>
 </template>

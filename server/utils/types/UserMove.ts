@@ -1,14 +1,10 @@
-export type Move = {
-  move_nr: number;
+export type UserMove = {
+  color: "w" | "b";
+  flags: string;
+  piece: string;
   san: string;
   from: string;
   to: string;
-  vote_count: number;
-  users: string[];
-  timestamp: number;
-  turn: "w" | "b";
-  piece: string;
-  flags: string;
 };
 
 // Flags

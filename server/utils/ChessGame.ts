@@ -1,5 +1,6 @@
 import { Chess } from "chess.js";
 import { Move } from "./types/Move";
+import DBConnector from "./DBConnector";
 
 // Flags
 // n - a non-capture
@@ -11,8 +12,6 @@ import { Move } from "./types/Move";
 // q - queenside castling
 
 export default class ChessGame {
-  // storage db string
-  db_string: string = "db:game_current.json";
   fen_default: string =
     "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
 
@@ -21,14 +20,20 @@ export default class ChessGame {
 
   static instance: ChessGame;
 
-  static async get_instance() {
+  static async get_instance(): Promise<ChessGame> {
     if (!this.instance) {
       // create new chessgame instance
       this.instance = new ChessGame();
-      // load fen from storage
-      const fen = await this.instance.get_saved_fen();
-      // load fen into chess object
-      if (fen) this.instance.load_fen(fen);
+
+      // read from storage
+      const db = await DBConnector.get_instance();
+      const game = await db.get_game_current();
+
+      // load moves
+      this.instance.moves = game.moves;
+
+      // load stored fen
+      if (game?.fen) this.instance.load_fen(game.fen);
       else this.instance.load_fen(this.instance.fen_default);
     }
     return this.instance;
@@ -38,13 +43,6 @@ export default class ChessGame {
     console.log("New chess game instance created");
   }
 
-  // read data from storage
-  async get_saved_fen() {
-    const data = await useStorage().getItem(this.db_string);
-    return data?.fen ? data.fen : null;
-  }
-
-  // load fen into chess object
   load_fen(fen: string) {
     const valid = this.chess.load(fen);
     if (!valid) console.log("Invalid fen: " + fen);
@@ -56,19 +54,23 @@ export default class ChessGame {
 
   is_move_valid(san: string) {
     const temp = new Chess();
+
     temp.load(this.get_fen());
+
     return temp.move(san) ? true : false;
   }
 
-  make_move(move: Move) {
-    // from: string, to: string, promotion?: string
+  async make_move(move: Move) {
     // make move
     const chess_move = this.chess.move(move.san);
+
     // check if move is valid
     if (!chess_move) return false;
     console.log("Move made: " + move.san, this.get_board_update().fen);
+
     // add move to moves array
     this.moves.push(move);
+
     return true;
   }
 
@@ -119,5 +121,9 @@ export default class ChessGame {
     this.moves = [];
     this.chess.reset();
     this.load_fen(this.fen_default);
+  }
+
+  get_png(newline?: string, maxWidth?: number) {
+    return this.chess.pgn({ newline, maxWidth });
   }
 }
