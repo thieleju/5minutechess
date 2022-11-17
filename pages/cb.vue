@@ -3,7 +3,6 @@
 const access_token = ref(useRoute()?.query?.access_token);
 const platform = ref(useRoute()?.query?.platform);
 
-// const store_user = useUserStore();
 const state_user = useStateUser();
 
 onMounted(async () => {
