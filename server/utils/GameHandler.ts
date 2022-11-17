@@ -181,6 +181,7 @@ export default class GameHandler {
           users: [vote.user],
           turn: vote.turn,
           timestamp: vote.timestamp,
+          piece: vote.piece,
         });
     });
     // find most voted move in array and return it

@@ -6,4 +6,5 @@ export type Move = {
   timestamp: number;
   turn: "w" | "b";
   promotion?: string;
+  piece: string;
 };
