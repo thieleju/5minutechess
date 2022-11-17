@@ -73,13 +73,14 @@ const votes_sorted = computed(() => {
     if (found) {
       found.count++;
       found.users = [].concat(found.users, vote.user);
-      found.title = get_vote_title(vote.san, found.count, found.users);
     } else
       counted.push({
         san: vote.san,
+        move_nr: vote.move_nr,
         count: 1,
         users: [vote.user],
-        title: get_vote_title(vote.san, 1, [vote.user]),
+        piece: vote.piece,
+        flags: vote.flags,
       });
   });
   // sort array by count
@@ -126,23 +127,14 @@ function get_move_title(move) {
     <v-window v-model="active_tab">
       <!-- VOTES -->
       <v-window-item>
-        <v-card class="mx-2 mb-2" elevation="2">
+        <v-card class="mx-2 mb-2 ma-auto" elevation="2">
           <v-list class="overflow-y-auto" height="18vh">
-            <!-- list with alternating colors -->
-            <v-list-item
-              v-if="votes_sorted?.length > 0"
+            <vote
               v-for="vote in votes_sorted"
-              :key="vote.move"
-              class="overflow-y-auto"
-              :title="vote.title"
-              prepend-icon="mdi-chess-pawn"
-            >
-            </v-list-item>
-            <v-list-item
-              v-else
-              title="No votes yet!"
-              prepend-icon="mdi-chess-pawn"
-            ></v-list-item>
+              :vote="vote"
+              :count_max="Math.max(...votes_sorted.map((v) => v.count))"
+            ></vote>
+            <vote v-if="!votes_sorted.length"></vote>
           </v-list>
         </v-card>
       </v-window-item>

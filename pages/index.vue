@@ -10,7 +10,7 @@
         md="9"
         sm="11"
         xs="11"
-        class="container mr-xl-2 mr-md-auto"
+        class="container mr-xl-2 mx-md-auto"
       >
         <chessboard></chessboard>
       </v-col>
@@ -20,7 +20,7 @@
         md="3"
         sm="11"
         xs="11"
-        class="container ml-xl-2 ml-md-auto"
+        class="container ml-xl-2 mx-md-auto"
       >
         <chessinfo></chessinfo>
       </v-col>
