@@ -19,3 +19,7 @@ export const useDoLoginLichess = async () => {
   const response = (await $fetch(`/api/auth/lichess/login`)) as any;
   navigateTo(response.url, { external: true });
 };
+
+export const useVotedMoveFrom = () =>
+  useState<string>("voted_move_from", () => "");
+export const useVotedMoveTo = () => useState<string>("voted_move_to", () => "");
