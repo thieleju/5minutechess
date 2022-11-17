@@ -4,10 +4,24 @@
   <v-main>
     <!-- <client-only placeholder="Loading..."> -->
     <v-row align="center">
-      <v-col cols="12" md="9" sm="12" class="mr-md-2 mr-sm-auto container">
+      <v-col
+        cols="12"
+        xl="9"
+        md="9"
+        sm="11"
+        xs="11"
+        class="container mr-xl-2 mr-md-auto"
+      >
         <chessboard></chessboard>
       </v-col>
-      <v-col cols="12" md="3" sm="12" class="ml-md-2 ml-sm-auto container">
+      <v-col
+        cols="12"
+        xl="3"
+        md="3"
+        sm="11"
+        xs="11"
+        class="container ml-xl-2 ml-md-auto"
+      >
         <chessinfo></chessinfo>
       </v-col>
     </v-row>
