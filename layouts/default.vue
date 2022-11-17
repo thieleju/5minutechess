@@ -1,26 +1,46 @@
 <script setup>
-import { ref } from "vue";
-
+const active_tab = ref(1);
 const state_user = useStateUser();
 
-const active_tab = ref(1);
+const apps = [
+  {
+    name: "Chess",
+    route: "/",
+  },
+  {
+    name: "Leaderboard",
+    route: "/leaderboard",
+  },
+  {
+    name: "Profile",
+    route: "/profile",
+    guard: true,
+  },
+  {
+    name: "About",
+    route: "/about",
+  },
+];
 </script>
 
 <template>
   <v-app>
     <NuxtLoadingIndicator />
     <!-- UNUSED -->
+    <!-- <particles></particles> -->
     <v-app-bar class="px-3" flat density="compact">
       <v-spacer></v-spacer>
       <v-tabs centered v-model="active_tab" color="primary">
-        <v-tab to="/" color="primary" class="tabText">Chess</v-tab>
-        <v-tab to="/leaderboard" color="primary" class="tabText"
-          >Leaderboard</v-tab
-        >
-        <v-tab v-if="state_user" to="/profile" color="primary" class="tabText"
-          >Profile</v-tab
-        >
-        <v-tab to="/about" color="primary" class="tabText">About</v-tab>
+        <div v-for="(app, i) in apps" :key="i">
+          <v-tab
+            v-if="state_user || !app.guard"
+            :to="app.route"
+            color="primary"
+            class="tabText"
+          >
+            {{ app.name }}
+          </v-tab>
+        </div>
       </v-tabs>
       <v-spacer></v-spacer>
     </v-app-bar>

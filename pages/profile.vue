@@ -1,4 +1,8 @@
 <script setup>
+definePageMeta({
+  middleware: ["guard-routes"],
+});
+
 const state_user = useStateUser();
 
 async function doLogout() {}

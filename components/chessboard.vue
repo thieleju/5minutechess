@@ -1,6 +1,8 @@
 <script setup>
 const info_text = useInfoText();
 const state_user = useStateUser();
+const vote_move_from = useVotedMoveFrom();
+const vote_move_to = useVotedMoveTo();
 
 const { data: votes, refresh: refresh_votes } = await useVoteUpdate();
 const { data: board, refresh: refresh_board } = await useBoardUpdate();
@@ -53,6 +55,14 @@ function is_king_in_check_and_on_square(x, y) {
 
 function get_square_from_xy(x, y) {
   return `${["a", "b", "c", "d", "e", "f", "g", "h"][y]}${8 - x}`;
+}
+
+function is_voted_move(x, y) {
+  const square = get_square_from_xy(x, y);
+  // console.log(from, to);
+  return square === vote_move_from.value || square === vote_move_to.value
+    ? true
+    : false;
 }
 
 function has_legal_moves(x, y) {
@@ -111,7 +121,12 @@ async function do_move(move) {
     return;
   }
 
+  // select voted move
+  vote_move_from.value = legal_move.from;
+  vote_move_to.value = legal_move.to;
+
   info_text.value = `You voted for the move ${move.san}`;
+
   await refresh_votes();
 }
 
@@ -143,6 +158,7 @@ function get_piece_img(item) {
                 'piece-selected':
                   selected_piece?.square == get_square_from_xy(x, y) &&
                   has_legal_moves(x, y),
+                'square-voted': is_voted_move(x, y),
               }"
             >
               <!-- Highlight legal moves for selected_piece -->
@@ -222,6 +238,13 @@ function get_piece_img(item) {
 
 .piece-selected {
   border: 5px solid #47474759;
+  width: 100%;
+  height: 100%;
+  opacity: 1;
+}
+
+.square-voted {
+  border: 5px solid #75db8d93;
   width: 100%;
   height: 100%;
   opacity: 1;

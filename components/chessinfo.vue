@@ -5,6 +5,8 @@ const time = ref("0:00");
 
 const info_text = useInfoText();
 const state_user = useStateUser();
+const vote_move_from = useVotedMoveFrom();
+const vote_move_to = useVotedMoveTo();
 
 var interval_timer = null;
 var interval_votes = null;
@@ -22,6 +24,11 @@ onMounted(() => {
 
     // reload page when countdown is over
     if (difference <= 0) {
+      // unselect voted move
+      // select voted move
+      vote_move_from.value = "";
+      vote_move_to.value = "";
+
       // update data
       await refresh_board();
       await refresh_votes();

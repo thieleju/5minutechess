@@ -1,5 +1,5 @@
+// This Plugin executes only on the client
 export default defineNuxtPlugin((nuxtApp) => {
-  // Doing something with nuxtApp
   // try to autologin from local storage
   // read state from local storage
   const state_user = useStateUser();
