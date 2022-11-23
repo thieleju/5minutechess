@@ -18,6 +18,11 @@ export default defineNuxtPlugin((nuxtApp) => {
   // check stored token validity
   const storage = JSON.parse(storage_string);
 
+  if (!storage.jwt || !storage?.user?.display_name || !storage.access_token) {
+    doSimpleLogout();
+    return;
+  }
+
   $fetch("/api/auth/check_token", {
     headers: {
       "Content-Type": "application/json",
@@ -35,7 +40,7 @@ export default defineNuxtPlugin((nuxtApp) => {
       state_user.value = storage;
 
       console.log(
-        `Autologin for user ${state_user.value.username} from localStorage`
+        `Autologin for user ${storage.user.display_name} successful!`
       );
     })
     .catch((err) => {
