@@ -19,16 +19,15 @@ onMounted(async () => {
     body: { access_token: access_token.value },
   });
 
-  if (!response.username) {
+  if (response?.status !== "ok") {
     navigateTo("/");
     return;
   }
 
   state_user.value = {
-    platform,
-    username: response.username,
     access_token: response.access_token,
     jwt: response.jwt,
+    user: response.user,
   };
 
   localStorage.setItem("state_user", JSON.stringify(state_user.value));

@@ -1,8 +1,6 @@
 import ChessGame from "./ChessGame";
-import { Vote } from "./types/Vote";
-import { Move } from "./types/Move";
-import { UserMove } from "./types/UserMove";
 import DBConnector from "./DBConnector";
+import { Game, Move, Vote, UserMove } from "./types/Global";
 
 export default class GameHandler {
   GAME_TICK_RATE: number = 1000;
@@ -15,7 +13,6 @@ export default class GameHandler {
   pause: boolean = false;
 
   votes: Vote[] = [];
-  votes_history: Vote[] = [];
 
   static instance: GameHandler;
 
@@ -32,7 +29,7 @@ export default class GameHandler {
     this.timestamp_started = new Date().getTime();
     this.start_game_loop();
 
-    console.log("New game handler instance created");
+    console.log("New GameHandler instance created");
   }
 
   start_game_loop() {
@@ -49,10 +46,12 @@ export default class GameHandler {
   }
 
   async game_tick() {
+    const db = await DBConnector.get_instance();
+
     if (!this.running) {
       // check if start new game or continue saved game
       const db = await DBConnector.get_instance();
-      const game = await db.get_game_current();
+      const game = await db.get_game();
       if (game) await this.continue_saved_game();
       else await this.start_new_game();
 
@@ -66,38 +65,47 @@ export default class GameHandler {
     if (new Date().getTime() < this.timestamp_next) return;
 
     // skip if no votes
-    if (this.votes.length == 0) {
+    if (!this.votes || this.votes.length == 0) {
       // reset timestamp
       this.timestamp_next = this.get_next_timestamp();
 
       // save timestamp
-      const db = await DBConnector.get_instance();
       db.save_timestamp_next(this.timestamp_next);
       return;
     }
 
     // find most voted move
-    const most_voted_move = this.find_most_voted_move();
-    if (!most_voted_move) console.log("Error, No most voted move found");
+    const most_voted_move = await this.find_most_voted_move();
 
     // make move
-    const game = await ChessGame.get_instance();
-    const move = game.make_move(most_voted_move!);
+    const chess_game = await ChessGame.get_instance();
+    const move = chess_game.make_move(most_voted_move);
     if (!move) console.log("Error, Invalid move", move);
 
     // save move to db
-    const db = await DBConnector.get_instance();
-    await db.save_move(most_voted_move!);
-    await db.save_fen(game.get_fen());
+    await db.save_move(most_voted_move);
+    await db.save_fen(chess_game.get_fen());
 
     // check if game is over
-    if (game.is_game_over()) {
+    if (chess_game.is_game_over()) {
       // get game result and print it
       const result = await this.get_game_result();
       this.pause = true;
 
       // save finished game
-      this.save_game_finished();
+      db.save_game_finshed(
+        {
+          id_game: this.id_game,
+          timestamp_started: this.timestamp_started,
+          timestamp_next: this.timestamp_next,
+          fen: chess_game.get_fen(),
+          fen_started: chess_game.fen_started,
+          pgn: chess_game.get_png(),
+          result: chess_game.get_game_result(),
+        },
+        chess_game.moves,
+        this.votes
+      );
 
       // wait 5 seconds // TODO change this
       setTimeout(async () => await this.start_new_game(), 5000);
@@ -108,39 +116,45 @@ export default class GameHandler {
       this.timestamp_next = this.get_next_timestamp();
 
       // save timestamp
-      const db = await DBConnector.get_instance();
       db.save_timestamp_next(this.timestamp_next);
 
       this.votes = [];
+      return;
     }
   }
 
-  async save_game_finished() {
-    const chess = await ChessGame.get_instance();
-    const db = await DBConnector.get_instance();
-    const game = {
-      id_game: this.id_game,
-      timestamp_started: this.timestamp_started,
-      timestamp_next: this.timestamp_next,
-      fen: chess.get_fen(),
-      fen_started: chess.fen_default,
-      pgn: chess.get_png(),
-      result: chess.get_game_result(),
-      votes: this.votes,
-      votes_history: this.votes_history,
-      moves: chess.moves,
-    };
-    db.save_game_fnished(game);
+  async find_most_voted_move(): Promise<Move> {
+    const chess_game = await ChessGame.get_instance();
+
+    // count votes and save info in counted_votes
+    const counted_votes: Array<Move> = [];
+    this.votes.forEach((vote) => {
+      const found = counted_votes.find((v) => v.san == vote.san);
+      if (found) {
+        found.vote_count++;
+        found.id_users.push(vote.id_user);
+      } else {
+        const id_users: number[] = [];
+        counted_votes.push(chess_game.generate_move_from_vote(vote));
+      }
+    });
+
+    // find most voted san
+    var most_voted: Move = counted_votes[0];
+    counted_votes.forEach((move) => {
+      if (move.vote_count > most_voted.vote_count) most_voted = move;
+    });
+
+    return most_voted;
   }
 
   async continue_saved_game() {
     const db = await DBConnector.get_instance();
-    const game = await db.get_game_current();
+    const game = await db.get_game();
     this.id_game = game.id_game;
     this.timestamp_next = game.timestamp_next;
     this.timestamp_started = game.timestamp_started;
-    this.votes = this.votes;
-    this.votes_history = this.votes_history;
+    this.votes = await db.get_votes();
 
     console.log(`Continued game: ${this.id_game}`);
   }
@@ -151,45 +165,40 @@ export default class GameHandler {
     this.timestamp_started = new Date().getTime();
     this.timestamp_next = this.get_next_timestamp();
     this.votes = [];
-    // reset chess game
-    const chess = await ChessGame.get_instance();
-    chess.reset_game();
-
     this.pause = false;
+
+    // reset chess game
+    const chess_game = await ChessGame.get_instance();
+    chess_game.reset_game();
 
     // save new current game to storage
     const db = await DBConnector.get_instance();
-    const game = {
+    db.save_game_current({
       id_game: this.id_game,
       timestamp_started: this.timestamp_started,
       timestamp_next: this.timestamp_next,
-      fen: chess.get_fen(),
-      fen_started: chess.fen_default,
-      pgn: chess.get_png(),
-      result: chess.get_game_result(),
-      votes: this.votes,
-      votes_history: this.votes_history,
-      moves: chess.moves,
-    };
-    db.save_game_current(game);
+      fen: chess_game.get_fen(),
+      fen_started: chess_game.fen_started,
+      pgn: chess_game.get_png(),
+      result: "",
+    });
 
     console.log(`New game started: ${this.id_game}`);
   }
 
-  async make_vote(user: string, move: UserMove): Promise<boolean> {
+  async make_vote(id_user: number, move: UserMove): Promise<boolean> {
     // check if move is valid
     const chess = await ChessGame.get_instance();
     if (!chess.is_move_valid(move.san)) return false;
 
     // add new vote to array
     const vote = {
-      id_game: this.id_game,
       id_vote: this.votes.length,
       move_nr: chess.get_move_count(),
       san: move.san,
       from: move.from,
       to: move.to,
-      user,
+      id_user,
       timestamp: new Date().getTime(),
       turn: chess.get_turn(),
       piece: move.piece,
@@ -199,10 +208,14 @@ export default class GameHandler {
 
     // save vote to db
     const db = await DBConnector.get_instance();
-    db.save_vote_history(vote);
+    await db.save_vote(vote);
+
+    const user = await db.get_user(id_user);
 
     console.log(
-      `[${new Date().toISOString()}] ${user} voted for move: ${move.san}`
+      `[${new Date().toISOString()}] ${user?.display_name} voted for move: ${
+        move.san
+      }`
     );
     return true;
   }
@@ -213,12 +226,23 @@ export default class GameHandler {
   }
 
   async get_game_update() {
+    // TODO find better solution for this
+    const db = await DBConnector.get_instance();
     const chess_game = await ChessGame.get_instance();
+    const votes: any = [];
+
+    // replace id_user with display_name
+    for (let i = 0; i < this.votes.length; i++) {
+      const vote = this.votes[i];
+      const user = await db.get_user(vote.id_user);
+      vote.display_name = user?.display_name;
+      votes.push(vote);
+    }
     return {
       id_game: this.id_game,
       timestamp_started: this.timestamp_started,
       timestamp_next: this.timestamp_next,
-      votes: this.votes,
+      votes: votes,
       moves: chess_game.moves,
       game_result: chess_game.get_game_result(),
     };
@@ -240,36 +264,8 @@ export default class GameHandler {
     return timestamp;
   }
 
-  has_user_voted(user: string): undefined | Vote {
-    return this.votes.find((vote) => vote.user == user);
-  }
-
-  find_most_voted_move(): Move | undefined {
-    // loop through votes and count votes for each move
-    var counted: Array<Move> = [];
-    this.votes.forEach((vote: Vote) => {
-      const new_move = {
-        move_nr: vote.move_nr,
-        san: vote.san,
-        from: vote.from,
-        to: vote.to,
-        vote_count: 1,
-        users: [vote.user],
-        timestamp: vote.timestamp,
-        turn: vote.turn,
-        piece: vote.piece,
-        flags: vote.flags,
-      };
-      // find
-      let found = counted.find((c) => c.san == vote.san);
-      if (found) {
-        found.vote_count++;
-        found.users = [...found.users, vote.user];
-      } else counted.push(new_move);
-    });
-    // find most voted move in array and return it
-    return counted.find(
-      (v) => v.vote_count == Math.max(...counted.map((v) => v.vote_count))
-    );
+  has_user_voted(id_user: number): Vote | undefined {
+    // TODO get user by id_user
+    return this.votes.find((vote) => vote.id_user == id_user);
   }
 }

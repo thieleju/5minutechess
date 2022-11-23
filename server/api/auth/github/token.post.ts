@@ -1,4 +1,5 @@
 import jwt from "jsonwebtoken";
+import DBConnector from "~~/server/utils/DBConnector";
 
 export default defineEventHandler(async (event) => {
   try {
@@ -16,17 +17,36 @@ export default defineEventHandler(async (event) => {
       method: "GET",
     });
 
+    // get user from db
+    const db = await DBConnector.get_instance();
+    var db_user = await db.get_user_by_auth_id(user.id);
+
+    // create new user if no existing found or update existing user with auth info
+    if (!db_user) {
+      await db.add_new_user("github", user.id, user.login);
+      db_user = await db.get_user_by_auth_id(user.id);
+    } else await db.update_user_auth("github", user.id, user.login);
+
     // sign userdata token
-    const token = jwt.sign({ username: user.login }, runtimeConfig.JWT_SECRET, {
-      expiresIn: runtimeConfig.JWT_TOKEN_EXPIRATION,
-    });
+    const token = jwt.sign(
+      { id_user: db_user?.id_user },
+      runtimeConfig.JWT_SECRET,
+      {
+        expiresIn: runtimeConfig.JWT_TOKEN_EXPIRATION,
+      }
+    );
 
     // send token
     return {
       status: "ok",
       access_token: req_body.access_token,
-      username: user.login,
       jwt: token,
+      user: {
+        id_user: db_user?.id_user,
+        display_name: db_user?.display_name,
+        stats: db_user?.stats,
+        auth: db_user?.auth,
+      },
     };
   } catch (e) {
     return { statusCode: 400, status: "error" };

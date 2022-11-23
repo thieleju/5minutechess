@@ -1,5 +1,5 @@
 import { Chess } from "chess.js";
-import { Move } from "./types/Move";
+import { Move, Vote } from "./types/Global";
 import DBConnector from "./DBConnector";
 
 // Flags
@@ -12,9 +12,10 @@ import DBConnector from "./DBConnector";
 // q - queenside castling
 
 export default class ChessGame {
-  fen_default: string =
+  fen_started: string =
     "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
 
+  id_game: number = 0;
   chess: Chess = new Chess();
   moves: Move[] = [];
 
@@ -27,20 +28,41 @@ export default class ChessGame {
 
       // read from storage
       const db = await DBConnector.get_instance();
-      const game = await db.get_game_current();
+      const game = await db.get_game();
 
-      // load moves
-      this.instance.moves = game.moves;
+      // load moves and fen
+      this.instance.moves = await db.get_moves();
 
-      // load stored fen
-      if (game?.fen) this.instance.load_fen(game.fen);
-      else this.instance.load_fen(this.instance.fen_default);
+      // check if current game exists
+      if (game && game?.fen) {
+        // load stored fen
+        this.instance.fen_started = game.fen_started;
+        this.instance.load_fen(game.fen);
+      } else {
+        this.instance.load_fen(this.instance.fen_started);
+      }
     }
     return this.instance;
   }
 
   constructor() {
-    console.log("New chess game instance created");
+    console.log("New ChessGame instance created");
+  }
+
+  generate_move_from_vote(vote: Vote): Move {
+    return {
+      id_move: this.moves.length,
+      move_nr: this.get_move_count(),
+      san: vote.san,
+      from: vote.from,
+      to: vote.to,
+      vote_count: 1,
+      timestamp: new Date().getTime(),
+      turn: vote.turn,
+      piece: vote.piece,
+      flags: vote.flags,
+      id_users: [vote.id_user],
+    };
   }
 
   load_fen(fen: string) {
@@ -113,14 +135,14 @@ export default class ChessGame {
     return this.chess.history().length;
   }
 
-  get_turn() {
+  get_turn(): "w" | "b" {
     return this.chess.turn();
   }
 
   reset_game() {
     this.moves = [];
     this.chess.reset();
-    this.load_fen(this.fen_default);
+    this.load_fen(this.fen_started);
   }
 
   get_png(newline?: string, maxWidth?: number) {
