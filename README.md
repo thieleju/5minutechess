@@ -21,6 +21,8 @@ LICHESS_CLIENT_ID=<lichess oauth>
 LICHESS_CLIENT_SECRET=<lichess oauth>
 JWT_TOKEN_EXPIRATION=1d
 JWT_SECRET=<random string>
+DB_REDIS_HOST=<redis host>
+DB_REDIS_PORT=<redis port>
 BASE_URL=http://localhost:3000
 ```
 

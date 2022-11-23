@@ -5,7 +5,7 @@ export default defineNuxtConfig({
     "@mdi/font/css/materialdesignicons.min.css",
   ],
   // plugins: [{ src: "" }],
-  modules: ["@pinia/nuxt"],
+  // modules: ["@nuxtjs/robots"],
   build: {
     transpile: ["vuetify", "chess.js", "jsonwebtoken"],
   },
@@ -28,18 +28,13 @@ export default defineNuxtConfig({
   },
   nitro: {
     storage: {
-      // TODO
-      // redis: {
-      //   driver: "redis",
-      /* redis connector options */
-      // port: 6379, // Redis port
-      // host: "127.0.0.1", // Redis host
-      // username: "", // needs Redis >= 6
-      // password: "",
-      // db: 0, // Defaults to 0
-      // tls: {}, // tls/ssl
-      // },
-      db: {
+      redis: {
+        driver: "redis",
+        port: process.env.DB_REDIS_PORT,
+        host: process.env.DB_REDIS_HOST,
+        db: 0,
+      },
+      dev: {
         driver: "fs",
         base: "./data/db",
       },
