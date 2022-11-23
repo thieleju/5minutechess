@@ -1,4 +1,4 @@
-import { verifyToken } from "~~/server/utils/verify_token";
+import { verifyToken } from "~~/server/utils/jwt";
 
 export default defineEventHandler(async (event) => {
   // get basic auth header and authenticate user token

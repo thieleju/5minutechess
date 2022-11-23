@@ -140,7 +140,8 @@ onUnmounted(() => {
       </div>
 
       <div v-if="state_user && !info_text" class="text-center text-h6 py-3">
-        Click on a piece to move it, <strong>{{ state_user.username }}</strong>
+        Click on a piece to move it,
+        <strong>{{ state_user.user.display_name }}</strong>
       </div>
     </div>
   </div>

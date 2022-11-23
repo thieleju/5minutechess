@@ -4,8 +4,6 @@ definePageMeta({
 });
 
 const state_user = useStateUser();
-
-async function doLogout() {}
 </script>
 
 <template>
@@ -21,38 +19,44 @@ async function doLogout() {}
         xl: 4,
       }"
     >
-      <div v-if="state_user" class="ma-auto">
-        Logged in as <strong>{{ state_user.username }}</strong> ({{
-          state_user.platform
-        }})
-        <!-- <v-btn color="background" @click="doLogout">Logout</v-btn> -->
-      </div>
-      <v-row v-else class="ma-auto text-center">
-        <v-col cols="12">
-          <v-btn
-            color="background"
-            @click="useDoLoginGithub"
-            prepend-icon="mdi-github"
-            >Login with GitHub</v-btn
-          >
-        </v-col>
-        <v-col cols="12">
-          <v-btn
-            color="background"
-            @click="useDoLoginDiscord"
-            prepend-icon="mdi-ghost"
-            >Login with Discord</v-btn
-          >
-        </v-col>
-        <v-col cols="12">
-          <v-btn
-            color="background"
-            @click="useDoLoginLichess"
-            prepend-icon="mdi-chess-knight"
-            >Login with Lichess</v-btn
-          >
-        </v-col>
-      </v-row>
+      <v-container>
+        <div v-if="state_user?.user" class="ma-auto">
+          Logged in as <strong>{{ state_user?.user.display_name }}</strong>
+          <!-- <v-btn color="background" @click="doLogout">Logout</v-btn> -->
+        </div>
+        <div>{{ state_user?.user.id_user }}</div>
+        <div>{{ state_user?.user.display_name }}</div>
+        <!-- <div>{{ state_user?.user.stats }}</div> -->
+        <div>lichess {{ state_user?.user.auth.lichess }}</div>
+        <div>github {{ state_user?.user.auth.github }}</div>
+        <div>discord {{ state_user?.user.auth.discord }}</div>
+        <v-row class="ma-auto text-center">
+          <v-col cols="12">
+            <v-btn
+              color="background"
+              @click="useDoLoginGithub"
+              prepend-icon="mdi-github"
+              >Connect GitHub Account</v-btn
+            >
+          </v-col>
+          <v-col cols="12">
+            <v-btn
+              color="background"
+              @click="useDoLoginDiscord"
+              prepend-icon="mdi-ghost"
+              >Connect Discord Account</v-btn
+            >
+          </v-col>
+          <v-col cols="12">
+            <v-btn
+              color="background"
+              @click="useDoLoginLichess"
+              prepend-icon="mdi-chess-knight"
+              >Connect Lichess Account</v-btn
+            >
+          </v-col>
+        </v-row>
+      </v-container>
     </main-container>
   </v-main>
 </template>

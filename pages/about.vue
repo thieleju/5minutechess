@@ -29,7 +29,7 @@ const items = ref([
   <v-main>
     <main-container
       icon="mdi-information"
-      text="5 Minute Chess - About"
+      text="About"
       :size="{
         xs: 12,
         sm: 8,

@@ -7,7 +7,7 @@ const { data: board, refresh: refresh_board } = await useBoardUpdate();
 const votes_sorted = computed(() => {
   // get votes array from ref
   const v = unref(votes).votes;
-  // console.log(votes[0], votes);
+
   if (!v) return [];
 
   let counted = [];
@@ -21,7 +21,7 @@ const votes_sorted = computed(() => {
         san: vote.san,
         move_nr: vote.move_nr,
         count: 1,
-        users: [vote.user],
+        users: [vote.display_name],
         piece: vote.piece,
         flags: vote.flags,
       });
