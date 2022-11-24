@@ -17,8 +17,10 @@ export default class StatsHandler {
     const db = await DBConnector.get_instance();
     const users = await db.get_users();
 
-    // filter public and private profiles
-    const filtered = users.filter((user) => user.visibility === "public");
+    // filter public/private profiles and votes > 0
+    const filtered = users.filter(
+      (user) => user.visibility === "public" && user.stats.votes_count > 0
+    );
     const sorted = filtered.sort(
       (a, b) => b.stats.votes_count - a.stats.votes_count
     );
