@@ -15,7 +15,7 @@ const votes_sorted = computed(() => {
     let found = counted.find((c) => c.san == vote.san);
     if (found) {
       found.count++;
-      found.users = [].concat(found.users, vote.user);
+      found.users = [].concat(found.users, vote.display_name);
     } else
       counted.push({
         san: vote.san,
