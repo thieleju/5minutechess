@@ -4,6 +4,10 @@
 
 ![Preview Image](./preview.png)
 
+## 🚀 How it works
+
+Players are able to vote for a move. You can log in via OAuth for Github, Discord and Lichess. 
+Every 5 minutes the most voted move is played on the board. If there are no votes, the timer resets and starts again.
 
 ## Environment Variables
 
