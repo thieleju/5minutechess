@@ -67,7 +67,7 @@ export default class StatsHandler {
     var stats = await this.get_stats(id_user);
     const db = await DBConnector.get_instance();
     // get all votes from user
-    const votes = await db.get_votes_user(id_user);
+    const votes = await db.get_votes_all_user(id_user);
     // get number of different games in votes
     const num_of_games = new Set(votes.map((vote) => vote.id_game)).size;
     // add number of games to stats
@@ -122,7 +122,7 @@ export default class StatsHandler {
         break;
     }
 
-    if (move.san.includes("+"))
+    if (move.san.includes("+") || move.san.includes("#"))
       promises.push(this.add_stats(id_user, "checks", 1));
     if (move.san.includes("#"))
       promises.push(this.add_stats(id_user, "checkmates", 1));
