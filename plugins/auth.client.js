@@ -31,13 +31,20 @@ export default defineNuxtPlugin((nuxtApp) => {
     method: "get",
   })
     .then((res) => {
-      if (res.status !== "ok") {
+      if (res.status !== "ok" || !res.user) {
         doSimpleLogout();
         return;
       }
+      const user = {
+        access_token: storage.access_token,
+        jwt: storage.jwt,
+        user: res.user,
+      };
 
       // token still valid
-      state_user.value = storage;
+      state_user.value = user;
+
+      localStorage.setItem("state_user", JSON.stringify(user));
 
       console.log(
         `Autologin for user ${storage.user.display_name} successful!`

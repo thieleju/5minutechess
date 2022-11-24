@@ -1,4 +1,4 @@
-import { Game, Move, User, Vote } from "./types/Global";
+import { Game, Move, Stats, User, Vote } from "./types/Global";
 
 export default class DBConnector {
   private STORAGE: string = "dev";
@@ -172,6 +172,11 @@ export default class DBConnector {
     return votes;
   }
 
+  async get_votes_user(id_user: number): Promise<Vote[]> {
+    var votes: Vote[] = await this.get_votes();
+    return votes.filter((vote) => vote.id_user == id_user);
+  }
+
   async save_vote(vote: Vote): Promise<void> {
     var votes: Vote[] = await this.get_votes();
     const id_game: number = await this.get_id_game();
@@ -227,13 +232,13 @@ export default class DBConnector {
       visibility: "public",
       stats: {
         games_played_in: 0,
-        votes_for_black: 0,
-        votes_for_white: 0,
+        votes_count: 0,
         captures: 0,
         en_passant: 0,
         promotion: 0,
         castle: 0,
         checks: 0,
+        checkmates: 0,
         moved_pieces: {
           pawn: 0,
           knight: 0,
@@ -280,6 +285,17 @@ export default class DBConnector {
     if (platform == "github")
       user.auth.github = { id, username, visibility: "public" };
 
+    await this.set_db_user(user);
+  }
+
+  async get_user_stats(id_user: number): Promise<Stats> {
+    var user = await this.get_db_user(id_user);
+    return user.stats;
+  }
+
+  async save_user_stats(id_user: number, stats: Stats): Promise<void> {
+    var user = await this.get_user(id_user);
+    user.stats = stats;
     await this.set_db_user(user);
   }
 }
