@@ -104,6 +104,16 @@ export default class DBConnector {
     return useStorage().setItem(`${this.STORAGE}:game:${game.id_game}`, game);
   }
 
+  async get_games_all(): Promise<Game[]> {
+    const current_game = await this.get_db_game_current();
+    var games: Game[] = [current_game];
+    for (let i = 1; i < current_game.id_game; i++) {
+      const game = await this.get_db_game(i);
+      games.push(game);
+    }
+    return games;
+  }
+
   // ############# MOVE #############
   private async get_db_move(id_game: number, id_move: number): Promise<Move> {
     return useStorage().getItem(`${this.STORAGE}:move:${id_game}:${id_move}`);
@@ -154,6 +164,34 @@ export default class DBConnector {
       `${this.STORAGE}:vote:${id_game}:${vote.id_vote}`,
       vote
     );
+  }
+
+  async get_votes_all_user(id_user: number): Promise<Vote[]> {
+    // get all games
+    const games = await this.get_games_all();
+    var votes: Vote[] = [];
+
+    for (let game of games) {
+      // get all votes of game
+      const votes2 = await this.get_votes_game(game);
+      for (let vote of votes2) {
+        if (vote.id_user == id_user) votes.push(vote);
+      }
+    }
+    return votes;
+  }
+
+  async get_votes_game(game: Game): Promise<Vote[]> {
+    var votes: Vote[] = [];
+
+    var end = false;
+    while (!end) {
+      var vote = await this.get_db_vote(game.id_game, votes.length);
+      if (vote) votes.push(vote);
+      else end = true;
+    }
+
+    return votes;
   }
 
   async get_votes(): Promise<Vote[]> {
@@ -277,13 +315,13 @@ export default class DBConnector {
     if (!user) throw `User not found! ${platform} ${id} ${username}`;
 
     if (platform == "lichess")
-      user.auth.lichess = { id, username, visibility: "public" };
+      user.auth!.lichess = { id, username, visibility: "public" };
 
     if (platform == "discord")
-      user.auth.discord = { id, username, visibility: "public" };
+      user.auth!.discord = { id, username, visibility: "public" };
 
     if (platform == "github")
-      user.auth.github = { id, username, visibility: "public" };
+      user.auth!.github = { id, username, visibility: "public" };
 
     await this.set_db_user(user);
   }

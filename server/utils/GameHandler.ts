@@ -81,7 +81,7 @@ export default class GameHandler {
     // make move
     const chess_game = await ChessGame.get_instance();
     const move: UserMove | false = chess_game.make_move(most_voted_move);
-    if (!move) console.log("Error, Invalid move", move);
+    if (!move) return;
 
     // update stats
     const stats = await StatsHandler.get_instance();
