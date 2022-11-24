@@ -30,3 +30,5 @@ export const useUserUpdate = (access_token: string) =>
       Authorization: `Bearer ${access_token}`,
     },
   });
+
+export const useLeaderboard = () => useFetch("/api/game/leaderboard");

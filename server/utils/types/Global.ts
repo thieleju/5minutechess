@@ -80,7 +80,7 @@ export type User = {
   display_name: string;
   visibility: "public" | "private";
   stats: Stats;
-  auth: {
+  auth?: {
     lichess: {
       id: number | string;
       username: string;

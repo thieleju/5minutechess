@@ -1,13 +1,6 @@
 <script setup>
-// const username = ref("0xju");
-
-// const { data } = await useFetch(
-//   () => `https://api.chess.com/pub/player/${username.value}`
-// );
-
-// const openLink = (link) => {
-//   window.open(link, "_blank");
-// };
+const { data: leaderboard, refresh: refresh_leaderboard } =
+  await useLeaderboard();
 </script>
 
 <template>
@@ -23,32 +16,25 @@
         xl: 4,
       }"
     >
-      <v-card-title class="ma-auto">Leaderboard coming soon!</v-card-title>
-      <!-- <v-text-field
-        v-model="username"
-        label="Enter chess.com username"
-      ></v-text-field> -->
-      <!-- <v-card v-if="data">
-        <v-row>
-          <v-col class="mx-9 align-self-center">
-            <v-card-title>{{ data?.username }}</v-card-title>
-            <v-card-subtitle
-              >{{ data?.name }} ({{ data?.status }})</v-card-subtitle
-            >
-            <v-card-actions>
-              <v-btn color="primary" text link @click="openLink(data?.url)">
-                Profile
-              </v-btn>
-            </v-card-actions>
-          </v-col>
-          <v-col>
-            <v-img :src="data?.avatar" class="mx-auto"></v-img>
-          </v-col>
-        </v-row>
-      </v-card>
-      <v-card v-else>
-        <v-card-title>User `{{ username }}` could not be found!</v-card-title>
-      </v-card> -->
+      <v-container class="mb-3">
+        <v-card-title>Top 10</v-card-title>
+        <v-list class="mx-4" min-height="20vh">
+          <v-list-item
+            v-for="item in leaderboard"
+            :key="item.id_user"
+            prepend-icon="mdi-minus"
+          >
+            <v-list-item-title>
+              <v-row>
+                <v-col>
+                  {{ item.display_name }}
+                </v-col>
+                <v-col> Votes: {{ item.stats.votes_count }} </v-col>
+              </v-row>
+            </v-list-item-title>
+          </v-list-item>
+        </v-list>
+      </v-container>
     </main-container>
   </v-main>
 </template>
