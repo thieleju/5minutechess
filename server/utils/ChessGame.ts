@@ -1,6 +1,7 @@
 import { Chess } from "chess.js";
-import { Move, Vote } from "./types/Global";
+import { Move, Vote, UserMove, User } from "./types/Global";
 import DBConnector from "./DBConnector";
+import StatsHandler from "./StatsHandler";
 
 // Flags
 // n - a non-capture
@@ -52,6 +53,7 @@ export default class ChessGame {
   generate_move_from_vote(vote: Vote): Move {
     return {
       id_move: this.moves.length,
+      id_game: this.id_game,
       move_nr: this.get_move_count(),
       san: vote.san,
       from: vote.from,
@@ -82,7 +84,7 @@ export default class ChessGame {
     return temp.move(san) ? true : false;
   }
 
-  async make_move(move: Move) {
+  make_move(move: Move): false | UserMove {
     // make move
     const chess_move = this.chess.move(move.san);
 
@@ -93,7 +95,7 @@ export default class ChessGame {
     // add move to moves array
     this.moves.push(move);
 
-    return true;
+    return chess_move as UserMove;
   }
 
   get_board_update() {

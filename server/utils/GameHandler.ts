@@ -1,6 +1,7 @@
 import ChessGame from "./ChessGame";
 import DBConnector from "./DBConnector";
-import { Game, Move, Vote, UserMove } from "./types/Global";
+import { Move, Vote, UserMove } from "./types/Global";
+import StatsHandler from "./StatsHandler";
 
 export default class GameHandler {
   GAME_TICK_RATE: number = 1000;
@@ -79,8 +80,16 @@ export default class GameHandler {
 
     // make move
     const chess_game = await ChessGame.get_instance();
-    const move = chess_game.make_move(most_voted_move);
+    const move: UserMove | false = chess_game.make_move(most_voted_move);
     if (!move) console.log("Error, Invalid move", move);
+
+    // update stats
+    const stats = await StatsHandler.get_instance();
+    var promises = [];
+    for (const user of most_voted_move.id_users) {
+      promises.push(stats.update_move_stats(user, move!));
+    }
+    await Promise.all(promises);
 
     // save move to db
     await db.save_move(most_voted_move);
@@ -194,6 +203,7 @@ export default class GameHandler {
     // add new vote to array
     const vote = {
       id_vote: this.votes.length,
+      id_game: this.id_game,
       move_nr: chess.get_move_count(),
       san: move.san,
       from: move.from,
@@ -211,6 +221,11 @@ export default class GameHandler {
     await db.save_vote(vote);
 
     const user = await db.get_user(id_user);
+
+    // add stats to user
+    const stats = await StatsHandler.get_instance();
+    await stats.add_stats(id_user, "votes_count", 1);
+    await stats.set_num_of_games_played(id_user);
 
     console.log(
       `[${new Date().toISOString()}] ${user?.display_name} voted for move: ${
