@@ -2,7 +2,6 @@
 
 <template>
   <v-main>
-    <!-- <client-only placeholder="Loading..."> -->
     <v-row align="center">
       <v-col
         cols="12"
@@ -25,7 +24,6 @@
         <chessinfo></chessinfo>
       </v-col>
     </v-row>
-    <!-- </client-only> -->
   </v-main>
 </template>
 
