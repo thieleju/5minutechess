@@ -1,6 +1,8 @@
 <script setup>
 const { data: leaderboard, refresh: refresh_leaderboard } =
   await useLeaderboard();
+
+await refresh_leaderboard();
 </script>
 
 <template>
