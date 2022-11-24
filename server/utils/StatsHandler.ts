@@ -1,5 +1,5 @@
 import DBConnector from "./DBConnector";
-import { Stats, UserMove } from "./types/Global";
+import { Stats, UserMove, User } from "./types/Global";
 
 export default class StatsHandler {
   static instance: StatsHandler;
@@ -11,6 +11,22 @@ export default class StatsHandler {
 
   constructor() {
     console.log("New Stats instance created");
+  }
+
+  async get_stats_leaderboard(): Promise<User[]> {
+    const db = await DBConnector.get_instance();
+    const users = await db.get_users();
+
+    // filter public and private profiles
+    const filtered = users.filter((user) => user.visibility === "public");
+    const sorted = filtered.sort(
+      (a, b) => b.stats.votes_count - a.stats.votes_count
+    );
+    // filter top 10
+    const top10 = sorted.slice(0, 10);
+    // delete auth data from user objects
+    top10.forEach((user) => delete user.auth);
+    return top10;
   }
 
   async get_stats(id_user: number): Promise<Stats> {
