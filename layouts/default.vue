@@ -25,9 +25,9 @@ const apps = [
 
 <template>
   <v-app>
+    <!-- Loading indicator -->
     <NuxtLoadingIndicator />
-    <!-- UNUSED -->
-    <!-- <particles></particles> -->
+    <!-- App Bar -->
     <v-app-bar class="px-3" flat density="compact">
       <v-spacer></v-spacer>
       <v-tabs centered v-model="active_tab" color="primary">
@@ -45,7 +45,13 @@ const apps = [
       <v-spacer></v-spacer>
     </v-app-bar>
 
-    <v-main color="primary">
+    <!-- Particles backgroung -->
+    <client-only>
+      <particles-comp></particles-comp>
+    </client-only>
+
+    <!-- Main View -->
+    <v-main class="bring_to_front">
       <slot />
     </v-main>
   </v-app>
@@ -54,5 +60,9 @@ const apps = [
 <style lang="scss">
 .tabText {
   -webkit-font-smoothing: antialiased;
+}
+
+.bring_to_front {
+  z-index: 5;
 }
 </style>

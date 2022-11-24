@@ -5,10 +5,16 @@ export default defineNuxtConfig({
     "@mdi/font/css/materialdesignicons.min.css",
     "@/assets/main.scss",
   ],
-  // plugins: [{ src: "" }],
+  plugins: ["@/plugins/particles.client.js"],
   // modules: ["@nuxtjs/robots"],
   build: {
-    transpile: ["vuetify", "chess.js", "jsonwebtoken"],
+    transpile: [
+      "vuetify",
+      "chess.js",
+      "jsonwebtoken",
+      "vue3-particles",
+      "tsparticles",
+    ],
   },
   vite: {
     define: {
