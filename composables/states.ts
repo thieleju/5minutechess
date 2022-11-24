@@ -23,3 +23,10 @@ export const useDoLoginLichess = async () => {
 export const useVotedMoveFrom = () =>
   useState<string>("voted_move_from", () => "");
 export const useVotedMoveTo = () => useState<string>("voted_move_to", () => "");
+
+export const useUserUpdate = (access_token: string) =>
+  useFetch("/api/user/user", {
+    headers: {
+      Authorization: `Bearer ${access_token}`,
+    },
+  });

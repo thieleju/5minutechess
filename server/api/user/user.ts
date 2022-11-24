@@ -11,5 +11,5 @@ export default defineEventHandler(async (event) => {
   const db = await DBConnector.get_instance();
   const user = await db.get_user(decoded.id_user);
 
-  return { status: "ok", user };
+  return { user };
 });

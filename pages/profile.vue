@@ -2,34 +2,25 @@
 definePageMeta({
   middleware: ["guard-routes"],
 });
-
 const state_user = useStateUser();
+const { data: user_updated, refresh: refresh_user } = await useUserUpdate(
+  state_user.value.jwt
+);
+await refresh_user();
 
-const stats = computed(() => {
-  return state_user.value.user.stats;
-});
-
-const platform = computed(() => {
-  if (state_user.value.user.auth.lichess) return "lichess";
-  if (state_user.value.user.auth.discord) return "discord";
-  if (state_user.value.user.auth.github) return "github";
-});
-
-const user = computed(() => {
-  return (
-    state_user.value.user.auth.lichess ||
-    state_user.value.user.auth.github ||
-    state_user.value.user.auth.discord
-  );
-});
-
-const username = ref(user.value.username);
-const switch_visibility = ref(user.value.visibility == "public");
+const username = ref(user_updated.value.user.display_name);
+const switch_visibility = ref(user_updated.value.user.visibility == "public");
 const switch_loading = ref(false);
 
 const switch_label = computed(() => {
   return switch_visibility.value ? "Profile is Public" : "Profile is Private";
 });
+
+async function logout() {
+  // TODO delete localstorage on client side
+  state_user.value = null;
+  await navigateTo("/");
+}
 
 watch(switch_visibility, (val) => {
   switch_loading.value = true;
@@ -83,35 +74,47 @@ watch(switch_visibility, (val) => {
               <v-card-text>
                 <v-row>
                   <v-col cols="10">Games played in</v-col>
-                  <v-col cols="2">{{ stats.games_played_in }}</v-col>
+                  <v-col cols="2">{{
+                    user_updated.user?.stats?.games_played_in
+                  }}</v-col>
                 </v-row>
                 <v-row>
-                  <v-col cols="10">Votes for white</v-col>
-                  <v-col cols="2">{{ stats.votes_for_white }}</v-col>
-                </v-row>
-                <v-row>
-                  <v-col cols="10">Votes for black</v-col>
-                  <v-col cols="2">{{ stats.votes_for_white }}</v-col>
+                  <v-col cols="10">Number of votes</v-col>
+                  <v-col cols="2">{{
+                    user_updated.user?.stats?.votes_count
+                  }}</v-col>
                 </v-row>
                 <v-row>
                   <v-col cols="10">Captures</v-col>
-                  <v-col cols="2">{{ stats.captures }}</v-col>
-                </v-row>
-                <v-row>
-                  <v-col cols="10">En Passant played</v-col>
-                  <v-col cols="2">{{ stats.en_passant }}</v-col>
-                </v-row>
-                <v-row>
-                  <v-col cols="10">Castle played</v-col>
-                  <v-col cols="2">{{ stats.castle }}</v-col>
+                  <v-col cols="2">{{
+                    user_updated.user?.stats?.captures
+                  }}</v-col>
                 </v-row>
                 <v-row>
                   <v-col cols="10">Pawn promotions</v-col>
-                  <v-col cols="2">{{ stats.promotion }}</v-col>
+                  <v-col cols="2">{{
+                    user_updated.user?.stats?.promotion
+                  }}</v-col>
                 </v-row>
                 <v-row>
-                  <v-col cols="10">Checks given</v-col>
-                  <v-col cols="2">{{ stats.checks }}</v-col>
+                  <v-col cols="10">En Passant played</v-col>
+                  <v-col cols="2">{{
+                    user_updated.user?.stats?.en_passant
+                  }}</v-col>
+                </v-row>
+                <v-row>
+                  <v-col cols="10">Castle played</v-col>
+                  <v-col cols="2">{{ user_updated.user?.stats?.castle }}</v-col>
+                </v-row>
+                <v-row>
+                  <v-col cols="10">Check played</v-col>
+                  <v-col cols="2">{{ user_updated.user?.stats?.checks }}</v-col>
+                </v-row>
+                <v-row>
+                  <v-col cols="10">Checkmate played</v-col>
+                  <v-col cols="2">{{
+                    user_updated.user?.stats?.checkmates
+                  }}</v-col>
                 </v-row>
               </v-card-text>
             </v-card>
@@ -122,59 +125,47 @@ watch(switch_visibility, (val) => {
               <v-card-text>
                 <v-row>
                   <v-col cols="10">Pawn</v-col>
-                  <v-col cols="2">{{ stats.moved_pieces.pawn }}</v-col>
+                  <v-col cols="2">{{
+                    user_updated.user?.stats?.moved_pieces.pawn
+                  }}</v-col>
                 </v-row>
                 <v-row>
                   <v-col cols="10">Knight</v-col>
-                  <v-col cols="2">{{ stats.moved_pieces.knight }}</v-col>
+                  <v-col cols="2">{{
+                    user_updated.user?.stats?.moved_pieces.knight
+                  }}</v-col>
                 </v-row>
                 <v-row>
                   <v-col cols="10">Bishop</v-col>
-                  <v-col cols="2">{{ stats.moved_pieces.bishop }}</v-col>
+                  <v-col cols="2">{{
+                    user_updated.user?.stats?.moved_pieces.bishop
+                  }}</v-col>
                 </v-row>
                 <v-row>
                   <v-col cols="10">Rook</v-col>
-                  <v-col cols="2">{{ stats.moved_pieces.rook }}</v-col>
+                  <v-col cols="2">{{
+                    user_updated.user?.stats?.moved_pieces.rook
+                  }}</v-col>
                 </v-row>
                 <v-row>
                   <v-col cols="10">Queen</v-col>
-                  <v-col cols="2">{{ stats.moved_pieces.queen }}</v-col>
+                  <v-col cols="2">{{
+                    user_updated.user?.stats?.moved_pieces.queen
+                  }}</v-col>
                 </v-row>
                 <v-row>
                   <v-col cols="10">King</v-col>
-                  <v-col cols="2">{{ stats.moved_pieces.king }}</v-col>
+                  <v-col cols="2">{{
+                    user_updated.user?.stats?.moved_pieces.king
+                  }}</v-col>
                 </v-row>
               </v-card-text>
             </v-card>
           </v-col>
         </v-row>
-        <!-- <v-row class="ma-auto text-center">
-          <v-col cols="12">
-            <v-btn
-              color="background"
-              @click="useDoLoginGithub"
-              prepend-icon="mdi-github"
-              >Connect GitHub Account</v-btn
-            >
-          </v-col>
-          <v-col cols="12">
-            <v-btn
-              color="background"
-              @click="useDoLoginDiscord"
-              prepend-icon="mdi-ghost"
-              >Connect Discord Account</v-btn
-            >
-          </v-col>
-          <v-col cols="12">
-            <v-btn
-              color="background"
-              @click="useDoLoginLichess"
-              prepend-icon="mdi-chess-knight"
-              >Connect Lichess Account</v-btn
-            >
-          </v-col>
-        </v-row> -->
       </v-container>
+      <v-divider></v-divider>
+      <v-btn block @click="logout" prepend-icon="mdi-logout">Logout</v-btn>
     </main-container>
   </v-main>
 </template>

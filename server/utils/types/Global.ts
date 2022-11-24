@@ -19,6 +19,7 @@ export type Game = {
 
 export type Move = {
   id_move: number;
+  id_game: number;
   move_nr: number;
   san: string;
   from: string;
@@ -33,6 +34,7 @@ export type Move = {
 
 export type Vote = {
   id_vote: number;
+  id_game: number;
   display_name?: string;
   move_nr: number;
   san: string;
@@ -54,28 +56,30 @@ export type UserMove = {
   piece: "p" | "r" | "k" | "n" | "q" | "b";
 };
 
+export type Stats = {
+  games_played_in: number;
+  votes_count: number;
+  captures: number;
+  en_passant: number;
+  promotion: number;
+  castle: number;
+  checks: number;
+  checkmates: number;
+  moved_pieces: {
+    pawn: number;
+    knight: number;
+    bishop: number;
+    rook: number;
+    queen: number;
+    king: number;
+  };
+};
+
 export type User = {
   id_user: number;
   display_name: string;
   visibility: "public" | "private";
-  stats: {
-    games_played_in: number;
-    votes_for_black: number;
-    votes_for_white: number;
-    captures: number;
-    en_passant: number;
-    promotion: number;
-    castle: number;
-    checks: number;
-    moved_pieces: {
-      pawn: number;
-      knight: number;
-      bishop: number;
-      rook: number;
-      queen: number;
-      king: number;
-    };
-  };
+  stats: Stats;
   auth: {
     lichess: {
       id: number | string;
