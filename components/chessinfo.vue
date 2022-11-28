@@ -14,6 +14,16 @@ var interval_votes = null;
 const { data: votes, refresh: refresh_votes } = await useVoteUpdate();
 const { data: board, refresh: refresh_board } = await useBoardUpdate();
 
+watch(
+  () => unref(votes).game_result,
+  async (new_value) => {
+    if (!new_value) {
+      await refresh_board();
+      await refresh_votes();
+    }
+  }
+);
+
 onMounted(() => {
   // update timer every second
   interval_timer = setInterval(async () => {
@@ -28,6 +38,9 @@ onMounted(() => {
       // select voted move
       vote_move_from.value = "";
       vote_move_to.value = "";
+
+      // check if game has ended
+      if (unref(votes).game_result) return;
 
       // update data
       await refresh_board();
@@ -107,7 +120,7 @@ onUnmounted(() => {
     </v-window>
     <v-divider></v-divider>
     <v-spacer></v-spacer>
-    <div v-if="votes.game_result" class="text-center text-h6">
+    <div v-if="votes.game_result" class="text-center text-h6 py-3">
       Game ended: {{ votes.game_result }}
     </div>
     <div v-else class="text-center text-h6 py-3">
