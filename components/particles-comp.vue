@@ -30,9 +30,9 @@ const options = computed(() => {
           quantity: 1,
         },
         attract: {
-          distance: 1000,
+          distance: 100,
           duration: 2,
-          speed: 0.3,
+          speed: 0.5,
           factor: 1,
         },
       },
