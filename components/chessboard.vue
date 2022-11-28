@@ -49,8 +49,8 @@ function is_king_in_check_and_on_square(x, y) {
   if (!moves) return false;
   const last_move = moves[moves.length - 1];
   // check if the piece in last_move is the same as the piece on x, y
-  if (last_move?.turn === piece.color) return false;
-  return last_move?.san.includes("+");
+  if (last_move?.turn !== piece.color) return false;
+  return last_move?.san.includes("+") || last_move?.san.includes("#");
 }
 
 function get_square_from_xy(x, y) {
