@@ -1,7 +1,7 @@
-import ChessGame from "~~/server/utils/ChessGame";
+import GameHandler from "~~/server/utils/GameHandler";
 
 export default defineEventHandler(async () => {
-  const game = await ChessGame.get_instance();
+  const game = await GameHandler.get_instance();
 
   return game.get_board_update();
 });

@@ -39,7 +39,7 @@ export default defineEventHandler(async (event) => {
     return {
       statusCode: 400,
       status: "error",
-      message: `Already voted for ${move.san}`,
+      message: `Already voted for ${check.san}`,
     };
 
   const db = await DBConnector.get_instance();

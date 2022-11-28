@@ -9,6 +9,7 @@
 
 export type Game = {
   id_game: number;
+  latest_move_nr: number;
   timestamp_started: number;
   timestamp_next: number;
   fen: string;

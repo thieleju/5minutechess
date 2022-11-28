@@ -17,11 +17,11 @@ function get_piece_icon(piece) {
 <template>
   <div v-for="(move, i) in board.moves" :key="i">
     <!-- two moves in one line -->
-    <div v-if="move.move_nr % 2 == 0">
+    <div v-if="move.move_nr % 2 == 1">
       <v-list-item class="overflow-y-auto pl-10">
         <v-row dense>
           <v-col cols="2" class="text-body-1">
-            {{ board.moves[i]?.move_nr / 2 + 1 }}.
+            {{ board.moves[i]?.move_nr / 2 + 0.5 }}.
           </v-col>
           <v-col class="text-body-1">
             <v-icon v-if="board.moves[i]?.piece">{{

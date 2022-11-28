@@ -138,7 +138,6 @@ export default class DBConnector {
       if (move) moves.push(move);
       else end = true;
     }
-
     return moves;
   }
 
@@ -208,6 +207,11 @@ export default class DBConnector {
     }
 
     return votes;
+  }
+
+  async get_votes_move_nr(move_nr: number): Promise<Vote[]> {
+    const votes = await this.get_votes();
+    return votes.filter((vote) => vote.move_nr === move_nr);
   }
 
   async get_votes_user(id_user: number): Promise<Vote[]> {
@@ -328,7 +332,7 @@ export default class DBConnector {
 
   async get_user_stats(id_user: number): Promise<Stats> {
     var user = await this.get_db_user(id_user);
-    return user.stats;
+    return user?.stats;
   }
 
   async save_user_stats(id_user: number, stats: Stats): Promise<void> {

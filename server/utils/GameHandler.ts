@@ -8,12 +8,14 @@ export default class GameHandler {
   GAME_INVERVAL: NodeJS.Timer | undefined;
 
   id_game: number = 0;
+  latest_move_nr: number = 0;
   timestamp_started: number = 0;
   timestamp_next: number = 0;
   running: boolean = false;
   pause: boolean = false;
 
   votes: Vote[] = [];
+  moves: Move[] = [];
 
   static instance: GameHandler;
 
@@ -76,12 +78,42 @@ export default class GameHandler {
     }
 
     // find most voted move
-    const most_voted_move = await this.find_most_voted_move();
+    const most_voted_move = this.find_most_voted_move();
 
     // make move
     const chess_game = await ChessGame.get_instance();
     const move: UserMove | false = chess_game.make_move(most_voted_move);
     if (!move) return;
+
+    // increment move number
+    this.latest_move_nr++;
+
+    this.moves.push({
+      id_move: this.moves.length,
+      id_game: this.id_game,
+      move_nr: this.latest_move_nr,
+      san: move.san,
+      from: move.from,
+      to: move.to,
+      vote_count: most_voted_move.vote_count,
+      timestamp: new Date().getTime(),
+      turn: chess_game.get_turn(),
+      piece: move.piece,
+      flags: move.flags,
+      id_users: most_voted_move.id_users,
+    });
+
+    // save current game progress
+    db.save_game_current({
+      id_game: this.id_game,
+      latest_move_nr: this.latest_move_nr,
+      timestamp_started: this.timestamp_started,
+      timestamp_next: this.timestamp_next,
+      fen: chess_game.get_fen(),
+      fen_started: chess_game.fen_started,
+      pgn: chess_game.get_png(),
+      result: "",
+    });
 
     // update stats
     const stats = await StatsHandler.get_instance();
@@ -105,6 +137,7 @@ export default class GameHandler {
       db.save_game_finshed(
         {
           id_game: this.id_game,
+          latest_move_nr: this.latest_move_nr,
           timestamp_started: this.timestamp_started,
           timestamp_next: this.timestamp_next,
           fen: chess_game.get_fen(),
@@ -112,7 +145,7 @@ export default class GameHandler {
           pgn: chess_game.get_png(),
           result: chess_game.get_game_result(),
         },
-        chess_game.moves,
+        this.moves,
         this.votes
       );
 
@@ -132,8 +165,9 @@ export default class GameHandler {
     }
   }
 
-  async find_most_voted_move(): Promise<Move> {
-    const chess_game = await ChessGame.get_instance();
+  find_most_voted_move(): Move {
+    // prefetch new move data
+    const move_nr = this.latest_move_nr;
 
     // count votes and save info in counted_votes
     const counted_votes: Array<Move> = [];
@@ -143,8 +177,20 @@ export default class GameHandler {
         found.vote_count++;
         found.id_users.push(vote.id_user);
       } else {
-        const id_users: number[] = [];
-        counted_votes.push(chess_game.generate_move_from_vote(vote));
+        counted_votes.push({
+          id_move: this.moves.length,
+          id_game: this.id_game,
+          move_nr,
+          san: vote.san,
+          from: vote.from,
+          to: vote.to,
+          vote_count: 1,
+          timestamp: new Date().getTime(),
+          turn: vote.turn,
+          piece: vote.piece,
+          flags: vote.flags,
+          id_users: [vote.id_user],
+        });
       }
     });
 
@@ -159,13 +205,26 @@ export default class GameHandler {
 
   async continue_saved_game() {
     const db = await DBConnector.get_instance();
+    const chess_game = await ChessGame.get_instance();
     const game = await db.get_game();
     this.id_game = game.id_game;
     this.timestamp_next = game.timestamp_next;
     this.timestamp_started = game.timestamp_started;
-    this.votes = await db.get_votes();
 
-    console.log(`Continued game: ${this.id_game}`);
+    // load votes for current move nr
+    this.votes = await db.get_votes_move_nr(game.latest_move_nr);
+
+    // load moves for current game
+    this.moves = await db.get_moves();
+
+    // set latest move number
+    this.latest_move_nr = game.latest_move_nr;
+
+    // load fen
+    const fen = await db.get_fen();
+    chess_game.load_fen(fen);
+
+    console.log(`Continued game: ${this.id_game}`, game);
   }
 
   async start_new_game() {
@@ -174,6 +233,7 @@ export default class GameHandler {
     this.timestamp_started = new Date().getTime();
     this.timestamp_next = this.get_next_timestamp();
     this.votes = [];
+    this.moves = [];
     this.pause = false;
 
     // reset chess game
@@ -184,6 +244,7 @@ export default class GameHandler {
     const db = await DBConnector.get_instance();
     db.save_game_current({
       id_game: this.id_game,
+      latest_move_nr: this.latest_move_nr,
       timestamp_started: this.timestamp_started,
       timestamp_next: this.timestamp_next,
       fen: chess_game.get_fen(),
@@ -204,7 +265,7 @@ export default class GameHandler {
     const vote = {
       id_vote: this.votes.length,
       id_game: this.id_game,
-      move_nr: chess.get_move_count(),
+      move_nr: this.latest_move_nr,
       san: move.san,
       from: move.from,
       to: move.to,
@@ -240,6 +301,18 @@ export default class GameHandler {
     return chess.get_game_result();
   }
 
+  async get_board_update() {
+    const chess = await ChessGame.get_instance();
+    return {
+      fen: chess.get_fen(),
+      moves: this.moves,
+      turn: chess.get_turn(), // 'w' | 'b'
+      legal_moves: chess.get_legal_moves(),
+      board_setup: chess.get_board(),
+      game_result: chess.get_game_result(),
+    };
+  }
+
   async get_game_update() {
     // TODO find better solution for this
     const db = await DBConnector.get_instance();
@@ -258,7 +331,7 @@ export default class GameHandler {
       timestamp_started: this.timestamp_started,
       timestamp_next: this.timestamp_next,
       votes: votes,
-      moves: chess_game.moves,
+      moves: this.moves,
       game_result: chess_game.get_game_result(),
     };
   }

@@ -16,55 +16,17 @@ export default class ChessGame {
   fen_started: string =
     "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
 
-  id_game: number = 0;
   chess: Chess = new Chess();
-  moves: Move[] = [];
 
   static instance: ChessGame;
 
   static async get_instance(): Promise<ChessGame> {
-    if (!this.instance) {
-      // create new chessgame instance
-      this.instance = new ChessGame();
-
-      // read from storage
-      const db = await DBConnector.get_instance();
-      const game = await db.get_game();
-
-      // load moves and fen
-      this.instance.moves = await db.get_moves();
-
-      // check if current game exists
-      if (game && game?.fen) {
-        // load stored fen
-        this.instance.fen_started = game.fen_started;
-        this.instance.load_fen(game.fen);
-      } else {
-        this.instance.load_fen(this.instance.fen_started);
-      }
-    }
+    if (!this.instance) this.instance = new ChessGame();
     return this.instance;
   }
 
   constructor() {
     console.log("New ChessGame instance created");
-  }
-
-  generate_move_from_vote(vote: Vote): Move {
-    return {
-      id_move: this.moves.length,
-      id_game: this.id_game,
-      move_nr: this.get_move_count(),
-      san: vote.san,
-      from: vote.from,
-      to: vote.to,
-      vote_count: 1,
-      timestamp: new Date().getTime(),
-      turn: vote.turn,
-      piece: vote.piece,
-      flags: vote.flags,
-      id_users: [vote.id_user],
-    };
   }
 
   load_fen(fen: string) {
@@ -78,9 +40,7 @@ export default class ChessGame {
 
   is_move_valid(san: string) {
     const temp = new Chess();
-
     temp.load(this.get_fen());
-
     return temp.move(san) ? true : false;
   }
 
@@ -90,23 +50,9 @@ export default class ChessGame {
 
     // check if move is valid
     if (!chess_move) return false;
-    console.log("Move made: " + move.san, this.get_board_update().fen);
-
-    // add move to moves array
-    this.moves.push(move);
+    console.log("Move made: " + move.san, this.get_fen());
 
     return chess_move as UserMove;
-  }
-
-  get_board_update() {
-    return {
-      fen: this.get_fen(),
-      moves: this.moves,
-      turn: this.chess.turn(), // 'w' | 'b'
-      legal_moves: this.get_legal_moves(),
-      board_setup: this.chess.board(),
-      game_result: this.get_game_result(),
-    };
   }
 
   get_game_result():
@@ -115,14 +61,14 @@ export default class ChessGame {
     | "insufficient material"
     | "threefold repetition"
     | "50 move rule"
-    | null {
+    | "" {
     if (this.chess.isCheckmate()) return "checkmate";
     if (this.chess.isStalemate()) return "stalemate";
     if (this.chess.isInsufficientMaterial()) return "insufficient material";
     if (this.chess.isThreefoldRepetition()) return "threefold repetition";
     if (!this.chess.isInsufficientMaterial && this.chess.isDraw())
       return "50 move rule";
-    else return null;
+    else return "";
   }
 
   is_game_over() {
@@ -134,6 +80,7 @@ export default class ChessGame {
   }
 
   get_move_count() {
+    console.log("Move count: " + this.chess.history().length);
     return this.chess.history().length;
   }
 
@@ -141,8 +88,11 @@ export default class ChessGame {
     return this.chess.turn();
   }
 
+  get_board() {
+    return this.chess.board();
+  }
+
   reset_game() {
-    this.moves = [];
     this.chess.reset();
     this.load_fen(this.fen_started);
   }
