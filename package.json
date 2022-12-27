@@ -16,7 +16,7 @@
   },
   "dependencies": {
     "chess.js": "^1.0.0-alpha.0",
-    "jsonwebtoken": "^8.5.1",
+    "jsonwebtoken": "^9.0.0",
     "pinia": "^2.0.23",
     "sass": "^1.56.0",
     "tsparticles": "^2.5.3",
