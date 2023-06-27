@@ -9,13 +9,12 @@
 Players are able to vote for a move. You can log in via OAuth for Github, Discord and Lichess. 
 Every 5 minutes the most voted move is played on the board. If there are no votes, the timer resets and starts again.
 
-
+> **Warning** <br>
+> Site is currently not publicly available due dependency vulnerabilities I'm too lazy to fix 
 ### [Live Demo](https://demo.node5.de)
 
-## Environment Variables
 
-> **Warning** <br>
-> Due to a bug in Nuxt 3, the pre-build docker container does not read environment variables at runtime. The env variables have to be provided at build time. <br>
+## Environment Variables
 
 These environment variables are required to implement OAuth Login:
 
